@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Transaction, Categoria, AppConfig } from '../types';
+import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import { v4 as uuid } from 'uuid';
 
 interface FinanceContextType {
@@ -30,64 +32,86 @@ const defaultCategories: Categoria[] = [
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
 export const FinanceProvider = ({ children }: {children: ReactNode}) => {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem('@dash_gastos_transactions');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>(defaultCategories);
+  const [config, setConfig] = useState<AppConfig>({ metaEconomiaMensal: 1000, isDarkMode: false });
 
-  const [categories, setCategories] = useState<Categoria[]>(() => {
-    const saved = localStorage.getItem('@dash_gastos_categories');
-    return saved ? JSON.parse(saved) : defaultCategories;
-  });
-
-  const [config, setConfig] = useState<AppConfig>(() => {
-    const saved = localStorage.getItem('@dash_gastos_config');
-    return saved ? JSON.parse(saved) : { metaEconomiaMensal: 1000, isDarkMode: false };
-  });
-
+  // Sync Transactions
   useEffect(() => {
-    localStorage.setItem('@dash_gastos_transactions', JSON.stringify(transactions));
-  }, [transactions]);
+    const unsubscribe = onSnapshot(collection(db, 'transactions'), (snapshot) => {
+      const data: Transaction[] = [];
+      snapshot.forEach(docSnap => data.push(docSnap.data() as Transaction));
+      setTransactions(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
+  // Sync Categories
   useEffect(() => {
-    localStorage.setItem('@dash_gastos_categories', JSON.stringify(categories));
-  }, [categories]);
+    const unsubscribe = onSnapshot(collection(db, 'categories'), (snapshot) => {
+      if (snapshot.empty) {
+        // Inicializa com as defaults no banco pela primeira vez se o banco estiver vazio
+        defaultCategories.forEach(cat => {
+          setDoc(doc(db, 'categories', cat.id), cat);
+        });
+      } else {
+        const data: Categoria[] = [];
+        snapshot.forEach(docSnap => data.push(docSnap.data() as Categoria));
+        setCategories(data);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
+  // Sync Config
   useEffect(() => {
-    localStorage.setItem('@dash_gastos_config', JSON.stringify(config));
-    if (config.isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [config]);
+    const unsubscribe = onSnapshot(doc(db, 'config', 'main'), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data() as AppConfig;
+        setConfig(data);
+        if (data.isDarkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else {
+        // Salva a config inicial
+        setDoc(doc(db, 'config', 'main'), { metaEconomiaMensal: 1000, isDarkMode: false });
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const addTransaction = (t: Omit<Transaction, 'id'>) => {
-    setTransactions(prev => [...prev, { ...t, id: uuid() }]);
+  const addTransaction = async (t: Omit<Transaction, 'id'>) => {
+    const newId = uuid();
+    const newTx = { ...t, id: newId };
+    await setDoc(doc(db, 'transactions', newId), newTx);
   };
 
-  const updateTransaction = (id: string, t: Partial<Transaction>) => {
-    setTransactions(prev => prev.map(item => item.id === id ? { ...item, ...t } : item));
+  const updateTransaction = async (id: string, t: Partial<Transaction>) => {
+    await updateDoc(doc(db, 'transactions', id), t);
   };
 
-  const deleteTransaction = (id: string) => {
-    setTransactions(prev => prev.filter(item => item.id !== id));
+  const deleteTransaction = async (id: string) => {
+    await deleteDoc(doc(db, 'transactions', id));
   };
 
-  const addCategory = (c: Omit<Categoria, 'id'>) => {
-    setCategories(prev => [...prev, { ...c, id: uuid() }]);
+  const addCategory = async (c: Omit<Categoria, 'id'>) => {
+    const newId = uuid();
+    const newCat = { ...c, id: newId };
+    await setDoc(doc(db, 'categories', newId), newCat);
   };
 
-  const updateCategory = (id: string, c: Partial<Categoria>) => {
-    setCategories(prev => prev.map(item => item.id === id ? { ...item, ...c } : item));
+  const updateCategory = async (id: string, c: Partial<Categoria>) => {
+    await updateDoc(doc(db, 'categories', id), c);
   };
 
-  const deleteCategory = (id: string) => {
-    setCategories(prev => prev.filter(item => item.id !== id));
+  const deleteCategory = async (id: string) => {
+    await deleteDoc(doc(db, 'categories', id));
   };
 
-  const updateConfig = (c: Partial<AppConfig>) => {
-    setConfig(prev => ({ ...prev, ...c }));
+  const updateConfig = async (c: Partial<AppConfig>) => {
+    await setDoc(doc(db, 'config', 'main'), c, { merge: true });
   };
 
   const toggleDarkMode = () => {

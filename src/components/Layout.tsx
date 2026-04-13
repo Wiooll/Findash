@@ -26,7 +26,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
           <div className="bg-primary text-primary-foreground p-2 rounded-lg">
             <Wallet size={24} />
           </div>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">Nexus Finance</h1>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">FinDash</h1>
         </div>
         
         <nav className="flex-1 space-y-2">
@@ -65,7 +65,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
       <div className="md:hidden flex items-center justify-between bg-card p-4 border-b border-border z-10 sticky top-0">
         <div className="flex items-center gap-2">
           <Wallet size={20} className="text-primary" />
-          <h1 className="text-lg font-bold">Nexus Finance</h1>
+          <h1 className="text-lg font-bold">FinDash</h1>
         </div>
         <button onClick={toggleDarkMode} className="p-2 bg-secondary rounded-full">
           {config.isDarkMode ? <Sun size={16} /> : <Moon size={16} />}

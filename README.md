@@ -1,8 +1,8 @@
-# 💳 Nexus Finance | Seu Dashboard Financeiro
+# 💳 FinDash | Seu Dashboard Financeiro
 
-O **Nexus Finance** é um dashboard moderno, interativo e totalmente responsivo para controle anual de despesas e finanças pessoais. Desenvolvido para transformar planilhas cansativas em uma experiência de usuário visualmente agradável, ágil e que segue padrões de design de grandes aplicativos do mercado financeiro.
+O **FinDash** é um dashboard moderno, interativo e totalmente responsivo para controle anual de despesas e finanças pessoais. Desenvolvido para transformar planilhas cansativas em uma experiência de usuário visualmente agradável, ágil e que segue padrões de design de grandes aplicativos do mercado financeiro.
 
-![Nexus Finance Preview](https://via.placeholder.com/1200x600.png?text=Nexus+Finance+Dashboard) *(Ilustração do layout principal)*
+![FinDash Preview](https://via.placeholder.com/1200x600.png?text=FinDash+Dashboard) *(Ilustração do layout principal)*
 
 ---
 
@@ -43,11 +43,11 @@ Este projeto foi forjado utilizando o que há de melhor em ecossistema web moder
 
 ---
 
-## 💾 Persistência de Dados
+## ☁️ Persistência de Dados e Firebase
 
-Sua privacidade entra em jogo: Por padrão o Nexus Finance está programado para usar a funcionalidade de **LocalStorage**. Toda entrada gravada persistirá confinado diretamente em seu navegador (sem passar por nenhum banco de dados público). Feche e abra na hora que quiser e seus dados ainda piscarão na tela no mesmo centísegundo.
+Os dados da aplicação (Transações, Categorias e Configurações de tema) agora são persistidos e sincronizados em tempo real utilizando o **Firebase Firestore**. 
 
-> **Extensibilidade Pronta:** Caso queira escalar a aplicação usando **Firebase, Supabase ou PostgreSQL**, a arquitetura inteira centraliza o estado via Context API (`FinanceContext.tsx`). Basta alterar os gatilhos dos métodos no contexto por suas *Promises* do servidor para uma alteração "Plug & Play" com backend!
+> **Configuração:** Todo o funcionamento do backend exige que você preencha as suas credenciais no arquivo local `.env.local` criado durante o setup (veja o `.env.example`). O Contexto (`FinanceContext.tsx`) gerencia a atualização em tempo real (`onSnapshot`) então caso abra o dashboard em múltiplos computadores, todos exibirão lançamentos novos automaticamente garantindo que não perca nada quando formatar seu PC!
 
 ---
 
