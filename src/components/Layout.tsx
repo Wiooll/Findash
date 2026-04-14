@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { LayoutDashboard, ReceiptText, Tags, Moon, Sun, Target, Wallet } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, Tags, Moon, Sun, Target, Wallet, Repeat } from 'lucide-react';
 import { cn } from '../utils/lib';
 
 interface LayoutProps {
@@ -15,6 +15,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transações', icon: ReceiptText },
+    { id: 'recurring', label: 'Recorrências', icon: Repeat },
     { id: 'categories', label: 'Categorias', icon: Tags },
     { id: 'goals', label: 'Metas', icon: Target },
   ];
