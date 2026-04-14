@@ -6,6 +6,8 @@ import { TransactionsTable } from './components/TransactionsTable';
 import { Categories } from './components/Categories';
 import { Goals } from './components/Goals';
 import { RecurringTransactions } from './components/RecurringTransactions';
+import { Accounts } from './components/Accounts';
+import { CreditCards } from './components/CreditCards';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -14,6 +16,8 @@ function AppContent() {
     <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
       {activeTab === 'dashboard' && <Dashboard />}
       {activeTab === 'transactions' && <TransactionsTable />}
+      {activeTab === 'accounts' && <Accounts />}
+      {activeTab === 'credit-cards' && <CreditCards />}
       {activeTab === 'recurring' && <RecurringTransactions />}
       {activeTab === 'categories' && <Categories />}
       {activeTab === 'goals' && <Goals />}

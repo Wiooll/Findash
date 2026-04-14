@@ -1,6 +1,7 @@
-export type TransactionType = 'receita' | 'despesa';
+export type TransactionType = 'receita' | 'despesa' | 'transferencia';
 export type PaymentMethod = 'Dinheiro' | 'Cartão de crédito' | 'Débito' | 'PIX';
 export type RecurrenceFrequency = 'diaria' | 'semanal' | 'mensal' | 'anual';
+export type TipoConta = 'corrente' | 'poupanca' | 'dinheiro' | 'investimento';
 
 export interface Transaction {
   id: string;
@@ -12,6 +13,14 @@ export interface Transaction {
   formaPagamento: PaymentMethod;
   recurringRuleId?: string;
   generatedByRecurrence?: boolean;
+  // Sprint 2: campos opcionais para contas e cartões
+  contaId?: string;
+  cartaoId?: string;
+  parcelaAtual?: number;
+  totalParcelas?: number;
+  parcelaGrupoId?: string;
+  transferenciaPairId?: string; // ID da transação par na transferência
+  isTransferenciaOrigem?: boolean;
 }
 
 export interface Categoria {
@@ -46,4 +55,51 @@ export interface CategoryBudget {
 export interface AppConfig {
   metaEconomiaMensal: number;
   isDarkMode: boolean;
+}
+
+// Sprint 2: Conta/Carteira
+export interface Conta {
+  id: string;
+  nome: string;
+  tipo: TipoConta;
+  saldoInicial: number;
+  cor: string;     // hex para identificação visual
+  icone: string;   // nome do ícone lucide
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Sprint 2: Cartão de crédito
+export interface CartaoCredito {
+  id: string;
+  nome: string;
+  limite: number;
+  diaFechamento: number;   // 1-28
+  diaVencimento: number;   // 1-28
+  cor: string;
+  contaDebitoId: string;   // conta que paga a fatura
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Sprint 2: Status persistido de uma fatura (o total é calculado via useMemo)
+export interface FaturaStatus {
+  id: string;              // `fatura_${cartaoId}_${anoMes}`
+  cartaoId: string;
+  anoMes: string;          // YYYY-MM
+  status: 'aberta' | 'fechada' | 'paga';
+  dataFechamento: string;  // YYYY-MM-DD
+  dataVencimento: string;  // YYYY-MM-DD
+}
+
+// Sprint 2: Informações calculadas de uma fatura (não persistida)
+export interface FaturaInfo {
+  cartaoId: string;
+  cartaoNome: string;
+  anoMes: string;
+  dataFechamento: string;
+  dataVencimento: string;
+  status: 'aberta' | 'fechada' | 'paga';
+  total: number;
+  transacoes: Transaction[];
 }

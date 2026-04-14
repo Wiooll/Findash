@@ -22,8 +22,23 @@ Diga adeus a dezenas de modais e formulários pesados! Todas as transações e c
 - **Insights Preditivos:** O sistema te avisará se os gastos de uma categoria específica (como *Alimentação*) ultrapassarem a faixa segura de 40% das suas despesas do mês e alertará caso a economia não atinja os conformes previstos.
 
 🧾 **Gestor de Transações Completo**
-- Multi-Filtros: Filtre em tempo real por **mês**, **tipo** (receita/despesa) ou faça **buscas inteiras por descrição e categorias**.
+- Multi-Filtros: Filtre em tempo real por **mês**, **tipo** (receita/despesa/transferência) ou faça **buscas inteiras por descrição e categorias**.
 - Separação granular do seu dinheiro através de campos automáticos de **Forma de Pagamento** (Dinheiro, Cartão de Crédito, Débito e PIX).
+- Suporte a **compras parceladas**: gere N transações automaticamente com badge de parcela (ex: `2/6`), distribuídas nos meses corretos.
+- Vinculação de transações a **contas** ou **cartões de crédito** específicos.
+
+🏦 **Módulo de Contas e Carteiras** *(Sprint 2)*
+- Cadastre contas do tipo **Corrente, Poupança, Dinheiro e Investimento**.
+- Acompanhe o **saldo em tempo real** de cada conta, calculado a partir do saldo inicial e das transações vinculadas.
+- Visualize o **extrato de movimentações** por conta diretamente na tela.
+- **Transferência entre contas** com registro automático de entrada e saída sem distorcer os totais de receita/despesa.
+
+💳 **Cartão de Crédito e Faturas** *(Sprint 2)*
+- Cadastre cartões com **limite, dia de fechamento e dia de vencimento**.
+- Navegue entre períodos de fatura com controle de mês e veja todos os lançamentos do período.
+- Acompanhe **limite utilizado vs. disponível** com barra visual no card de cada cartão.
+- **Parcelamento de compras** distribui automaticamente cada parcela pelo mês correto de competência.
+- **Pagar Fatura** marca o status e registra a saída na conta de débito vinculada.
 
 🎨 **UI/UX Profissional (Design System)**
 - Paleta visual consistente (Verde para sucesso, Vermelho vivo para despesas, tons escuros e azuis para informações).
