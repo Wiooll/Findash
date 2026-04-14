@@ -90,3 +90,5 @@ npm run dev
 ---
 
 *Desenvolvido com carinho visual para uma experiência Premium. Aproveite seu Dashboard!* 💡
+## Atualizacoes Recentes
+- Correcao no calculo de limite de cartao para compras parceladas: o limite disponivel agora considera o total ainda nao quitado (incluindo parcelas futuras) e deixa de considerar parcelas de faturas ja pagas.

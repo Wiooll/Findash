@@ -4,6 +4,12 @@ Todas as mudanças relevantes de versão deste projeto serão documentadas neste
 
 O formato segue uma adaptação de [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 
+## [2.0.1] - 2026-04-14
+
+### Corrigido
+- Limite do cartão em compras parceladas agora considera todo o valor ainda não quitado, inclusive parcelas futuras.
+- Parcelas pertencentes a competências de fatura marcadas como `paga` não comprometem mais o limite disponível.
+
 ## [2.0.0] - 2026-04-14
 
 ### Adicionado

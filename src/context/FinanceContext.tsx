@@ -152,6 +152,18 @@ export const calcularPeriodoFatura = (
   return { inicio, fim, dataFechamento, dataVencimento };
 };
 
+const getAnoMesFaturaByTransactionDate = (cartao: CartaoCredito, dataTransacao: Date): string => {
+  const data = startOfDay(dataTransacao);
+  const fechamentoNoMesDaCompra = setDate(
+    new Date(data.getFullYear(), data.getMonth(), 1),
+    cartao.diaFechamento,
+  );
+  if (data <= fechamentoNoMesDaCompra) {
+    return format(data, 'yyyy-MM');
+  }
+  return format(addMonths(data, 1), 'yyyy-MM');
+};
+
 export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Categoria[]>(defaultCategories);
@@ -367,13 +379,22 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  /** Calcula o limite disponível do cartão considerando a fatura aberta atual */
+  /** Calcula o limite disponivel considerando todas as despesas ainda nao quitadas do cartao */
   const getLimiteDisponivel = (cartaoId: string): number => {
     const cartao = cartoesCredito.find((c) => c.id === cartaoId);
     if (!cartao) return 0;
-    const faturasInfo = getFaturasInfo();
-    const faturaAtual = faturasInfo.find((f) => f.cartaoId === cartaoId);
-    const usado = faturaAtual?.total ?? 0;
+    const usado = transactions.reduce((acc, t) => {
+      if (t.cartaoId !== cartaoId) return acc;
+      if (t.tipo !== 'despesa') return acc;
+      const dataTx = parseISO(t.data);
+      if (Number.isNaN(dataTx.getTime())) return acc;
+      const anoMesFatura = getAnoMesFaturaByTransactionDate(cartao, dataTx);
+      const statusFatura = faturaStatuses.find(
+        (f) => f.cartaoId === cartaoId && f.anoMes === anoMesFatura,
+      )?.status;
+      if (statusFatura === 'paga') return acc;
+      return acc + Number(t.valor);
+    }, 0);
     return cartao.limite - usado;
   };
 
