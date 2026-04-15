@@ -103,3 +103,57 @@ export interface FaturaInfo {
   total: number;
   transacoes: Transaction[];
 }
+
+export type ProjectionConfidence = 'baixa' | 'media' | 'alta';
+
+export interface ProjectionSummary {
+  projectedIncome: number;
+  projectedExpense: number;
+  projectedBalance: number;
+  incomeToDate: number;
+  expenseToDate: number;
+  observedDays: number;
+  totalDaysInMonth: number;
+  averageDailyIncome: number;
+  averageDailyExpense: number;
+  confidence: ProjectionConfidence;
+}
+
+export interface CategoryComparison {
+  categoryKey: string;
+  categoryName: string;
+  currentMonthTotal: number;
+  previousMonthTotal: number;
+  absoluteChange: number;
+  percentageChange: number | null;
+}
+
+export type InsightKind = 'increase' | 'decrease' | 'anomaly';
+export type InsightSeverity = 'info' | 'warning' | 'critical';
+
+export interface InsightAlert {
+  id: string;
+  kind: 'increase' | 'decrease';
+  categoryKey: string;
+  categoryName: string;
+  summary: string;
+  absoluteChange: number;
+  percentageChange: number;
+  generatedAt: string;
+  severity: InsightSeverity;
+}
+
+export interface AnomalyAlert {
+  id: string;
+  kind: 'anomaly';
+  categoryKey: string;
+  categoryName: string;
+  summary: string;
+  value: number;
+  baselineAverage: number;
+  threshold: number;
+  generatedAt: string;
+  severity: InsightSeverity;
+}
+
+export type InsightHistoryEntry = InsightAlert | AnomalyAlert;

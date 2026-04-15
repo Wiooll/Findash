@@ -1,17 +1,18 @@
 import type { ReactNode } from 'react';
-import { useFinance } from '../context/FinanceContext';
 import {
+  BrainCircuit,
+  CreditCard,
+  Landmark,
   LayoutDashboard,
-  ReceiptText,
-  Tags,
   Moon,
+  ReceiptText,
+  Repeat,
   Sun,
+  Tags,
   Target,
   Wallet,
-  Repeat,
-  Landmark,
-  CreditCard,
 } from 'lucide-react';
+import { useFinance } from '../context/FinanceContext';
 import { cn } from '../utils/lib';
 
 interface LayoutProps {
@@ -25,17 +26,17 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'transactions', label: 'Transações', icon: ReceiptText },
+    { id: 'transactions', label: 'Transacoes', icon: ReceiptText },
     { id: 'accounts', label: 'Contas', icon: Landmark },
-    { id: 'credit-cards', label: 'Cartões', icon: CreditCard },
-    { id: 'recurring', label: 'Recorrências', icon: Repeat },
+    { id: 'credit-cards', label: 'Cartoes', icon: CreditCard },
+    { id: 'insights', label: 'Insights', icon: BrainCircuit },
+    { id: 'recurring', label: 'Recorrencias', icon: Repeat },
     { id: 'categories', label: 'Categorias', icon: Tags },
     { id: 'goals', label: 'Metas', icon: Target },
   ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans transition-colors duration-300">
-      {/* Sidebar Desktop */}
       <aside className="w-full md:w-64 bg-card border-r border-border p-4 flex flex-col shadow-sm z-10 hidden md:flex">
         <div className="flex items-center gap-2 mb-8 px-2">
           <div className="bg-primary text-primary-foreground p-2 rounded-lg">
@@ -78,7 +79,6 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
         </div>
       </aside>
 
-      {/* Mobile: topo */}
       <div className="md:hidden flex items-center justify-between bg-card p-4 border-b border-border z-10 sticky top-0">
         <div className="flex items-center gap-2">
           <Wallet size={20} className="text-primary" />
@@ -89,7 +89,6 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
         </button>
       </div>
 
-      {/* Mobile: menu horizontal */}
       <div className="md:hidden flex overflow-x-auto bg-card border-b border-border no-scrollbar sticky top-[60px] z-10">
         {menuItems.map((item) => (
           <button

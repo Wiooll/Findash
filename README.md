@@ -92,3 +92,9 @@ npm run dev
 *Desenvolvido com carinho visual para uma experiência Premium. Aproveite seu Dashboard!* 💡
 ## Atualizacoes Recentes
 - Correcao no calculo de limite de cartao para compras parceladas: o limite disponivel agora considera o total ainda nao quitado (incluindo parcelas futuras) e deixa de considerar parcelas de faturas ja pagas.
+- Sprint 3 - Inteligencia e Planejamento:
+  - Projecao de fim de mes com receita, despesa e saldo previstos.
+  - Comparacao do mes atual vs mes anterior por categoria, com variacao absoluta e percentual.
+  - Insights automaticos de aumento/reducao de gastos por categoria.
+  - Deteccao de despesa fora do padrao com regra simples e explicavel.
+  - Nova aba "Insights" com historico cronologico de alertas.
