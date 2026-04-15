@@ -379,7 +379,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  /** Calcula o limite disponivel considerando todas as despesas ainda nao quitadas do cartao */
+  /** Calcula o limite disponível considerando todas as despesas ainda não quitadas do cartão */
   const getLimiteDisponivel = (cartaoId: string): number => {
     const cartao = cartoesCredito.find((c) => c.id === cartaoId);
     if (!cartao) return 0;

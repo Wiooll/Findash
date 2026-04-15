@@ -26,11 +26,11 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'transactions', label: 'Transacoes', icon: ReceiptText },
+    { id: 'transactions', label: 'Transações', icon: ReceiptText },
     { id: 'accounts', label: 'Contas', icon: Landmark },
-    { id: 'credit-cards', label: 'Cartoes', icon: CreditCard },
+    { id: 'credit-cards', label: 'Cartões', icon: CreditCard },
     { id: 'insights', label: 'Insights', icon: BrainCircuit },
-    { id: 'recurring', label: 'Recorrencias', icon: Repeat },
+    { id: 'recurring', label: 'Recorrências', icon: Repeat },
     { id: 'categories', label: 'Categorias', icon: Tags },
     { id: 'goals', label: 'Metas', icon: Target },
   ];

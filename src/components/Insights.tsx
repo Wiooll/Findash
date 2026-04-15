@@ -49,7 +49,7 @@ export const Insights = () => {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Insights</h2>
           <p className="text-sm text-muted-foreground">
-            Historico de alertas automaticos de variacao e anomalia.
+            Histórico de alertas automáticos de variação e anomalia.
           </p>
         </div>
         <div className="bg-card border border-border rounded-lg px-3 py-2 text-sm flex items-center gap-2">
@@ -96,7 +96,7 @@ export const Insights = () => {
                 entry.kind === 'increase'
                   ? 'aumento'
                   : entry.kind === 'decrease'
-                    ? 'reducao'
+                    ? 'redução'
                     : 'anomalia';
 
               const generatedAt = (() => {
@@ -134,7 +134,7 @@ export const Insights = () => {
                       </p>
                     ) : (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Variacao: {entry.percentageChange.toFixed(1)}% | Delta: {formatCurrency(entry.absoluteChange)}
+                        Variação: {entry.percentageChange.toFixed(1)}% | Delta: {formatCurrency(entry.absoluteChange)}
                       </p>
                     )}
                   </div>

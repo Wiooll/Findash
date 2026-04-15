@@ -213,7 +213,7 @@ export const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight">Visao Geral</h2>
+      <h2 className="text-2xl font-bold tracking-tight">Visão Geral</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <div className="bg-card p-5 rounded-xl border border-border shadow-sm flex flex-col justify-between">
@@ -238,7 +238,7 @@ export const Dashboard = () => {
 
         <div className="bg-card p-5 rounded-xl border border-border shadow-sm">
           <div className="flex justify-between items-center mb-3">
-            <p className="text-sm font-medium text-muted-foreground">Receitas (Mes)</p>
+            <p className="text-sm font-medium text-muted-foreground">Receitas (Mês)</p>
             <ArrowUpCircle className="text-success" size={18} />
           </div>
           <h3 className="text-2xl font-bold">{formatCurrency(stats.mesAtualReceitas)}</h3>
@@ -246,7 +246,7 @@ export const Dashboard = () => {
 
         <div className="bg-card p-5 rounded-xl border border-border shadow-sm">
           <div className="flex justify-between items-center mb-3">
-            <p className="text-sm font-medium text-muted-foreground">Despesas (Mes)</p>
+            <p className="text-sm font-medium text-muted-foreground">Despesas (Mês)</p>
             <ArrowDownCircle className="text-danger" size={18} />
           </div>
           <h3 className="text-2xl font-bold">{formatCurrency(stats.mesAtualDespesas)}</h3>
@@ -254,7 +254,7 @@ export const Dashboard = () => {
 
         <div className={`bg-card p-5 rounded-xl border ${isMetaAtingida ? 'border-success/50' : 'border-border'} shadow-sm`}>
           <div className="flex justify-between items-center mb-3">
-            <p className="text-sm font-medium text-muted-foreground">Economia (Mes)</p>
+            <p className="text-sm font-medium text-muted-foreground">Economia (Mês)</p>
             <PiggyBank className={isEconomiaPositiva ? 'text-success' : 'text-danger'} size={18} />
           </div>
           <h3 className={`text-2xl font-bold ${isEconomiaPositiva ? 'text-success' : 'text-danger'}`}>
@@ -289,14 +289,14 @@ export const Dashboard = () => {
             {riskCount}
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
-            {riskCount > 0 ? 'Acima de 80% do orcamento' : 'Nenhum em risco'}
+            {riskCount > 0 ? 'Acima de 80% do orçamento' : 'Nenhum em risco'}
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="bg-card p-5 rounded-xl border border-border shadow-sm">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Projecao de fim de mes</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Projeção de fim de mês</h3>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Receita prevista</span>
@@ -316,20 +316,20 @@ export const Dashboard = () => {
               Base: {projection.observedDays}/{projection.totalDaysInMonth} dias.
             </p>
             <p className="text-xs text-muted-foreground">
-              Media diaria receita/despesa: {formatCurrency(projection.averageDailyIncome)} / {formatCurrency(projection.averageDailyExpense)}
+              Média diária receita/despesa: {formatCurrency(projection.averageDailyIncome)} / {formatCurrency(projection.averageDailyExpense)}
             </p>
             <p className="text-xs text-muted-foreground">
-              Confianca: <span className="font-medium">{projection.confidence}</span>
+              Confiança: <span className="font-medium">{projection.confidence}</span>
             </p>
           </div>
         </div>
 
         <div className="xl:col-span-2 bg-card p-5 rounded-xl border border-border shadow-sm">
           <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-            Comparacao mes atual vs mes anterior por categoria
+            Comparação mês atual vs mês anterior por categoria
           </h3>
           {monthlyComparison.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sem dados suficientes para comparacao.</p>
+            <p className="text-sm text-muted-foreground">Sem dados suficientes para comparação.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -338,7 +338,7 @@ export const Dashboard = () => {
                     <th className="py-2 pr-2">Categoria</th>
                     <th className="py-2 px-2">Atual</th>
                     <th className="py-2 px-2">Anterior</th>
-                    <th className="py-2 px-2">Variacao</th>
+                    <th className="py-2 px-2">Variação</th>
                     <th className="py-2 pl-2">%</th>
                   </tr>
                 </thead>
@@ -367,7 +367,7 @@ export const Dashboard = () => {
         <div className="bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 p-4 rounded-lg flex items-center gap-3">
           <Calendar size={18} />
           <p className="text-sm font-medium">
-            Proximo vencimento: <strong>{proximoVencimento.cartaoNome}</strong> - {formatCurrency(proximoVencimento.total)} em{' '}
+            Próximo vencimento: <strong>{proximoVencimento.cartaoNome}</strong> - {formatCurrency(proximoVencimento.total)} em{' '}
             {format(parseISO(proximoVencimento.dataVencimento), 'dd/MM/yyyy')}
           </p>
         </div>
@@ -377,7 +377,7 @@ export const Dashboard = () => {
         <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-4 rounded-lg flex items-center gap-3">
           <AlertTriangle size={18} />
           <p className="text-sm font-medium">
-            Atencao: sua economia deste mes esta abaixo da meta de {formatCurrency(config.metaEconomiaMensal)}.
+            Atenção: sua economia deste mês está abaixo da meta de {formatCurrency(config.metaEconomiaMensal)}.
           </p>
         </div>
       )}
@@ -413,7 +413,7 @@ export const Dashboard = () => {
         <div key={item.categoryId} className="bg-danger/10 border border-danger/20 text-danger p-4 rounded-lg flex items-center gap-3">
           <AlertTriangle size={18} />
           <p className="text-sm font-medium">
-            Orcamento estourado em <strong>{item.categoryName}</strong>: {formatCurrency(item.spent)} de{' '}
+            Orçamento estourado em <strong>{item.categoryName}</strong>: {formatCurrency(item.spent)} de{' '}
             {formatCurrency(item.limit)} ({item.percent}%).
           </p>
         </div>
@@ -423,7 +423,7 @@ export const Dashboard = () => {
         <div key={item.categoryId} className="bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-4 rounded-lg flex items-center gap-3">
           <AlertTriangle size={18} />
           <p className="text-sm font-medium">
-            Atencao em <strong>{item.categoryName}</strong>: {item.percent}% do orcamento consumido.
+            Atenção em <strong>{item.categoryName}</strong>: {item.percent}% do orçamento consumido.
           </p>
         </div>
       ))}
@@ -432,7 +432,7 @@ export const Dashboard = () => {
         <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <CreditCard size={16} className="text-primary" />
-            Faturas de Cartao - {format(new Date(), "MMMM 'de' yyyy", { locale: ptBR })}
+            Faturas de Cartão - {format(new Date(), "MMMM 'de' yyyy", { locale: ptBR })}
           </h3>
           <div className="space-y-3">
             {faturasAtuais
@@ -485,7 +485,7 @@ export const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card p-6 rounded-xl border border-border flex flex-col shadow-sm">
-          <h3 className="font-semibold mb-6">Fluxo de Caixa - Ultimos 12 meses</h3>
+          <h3 className="font-semibold mb-6">Fluxo de Caixa - Últimos 12 meses</h3>
           <div className="flex-1 min-h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={flowData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -564,7 +564,7 @@ export const Dashboard = () => {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-muted-foreground text-sm">Nenhuma despesa registrada neste mes.</p>
+              <p className="text-muted-foreground text-sm">Nenhuma despesa registrada neste mês.</p>
             )}
           </div>
         </div>

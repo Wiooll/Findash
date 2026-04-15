@@ -24,7 +24,7 @@ describe('financialInsights utils', () => {
     expect(normalizeCategoryKey('  Alimentacao   Fora  ')).toBe('alimentacao fora');
   });
 
-  it('calcula projecao de fim de mes com base em media diaria', () => {
+  it('calcula projeção de fim de mês com base em média diária', () => {
     const transactions: Transaction[] = [
       baseTransaction({ id: 'r1', tipo: 'receita', valor: 2000, data: '2026-04-02' }),
       baseTransaction({ id: 'r2', tipo: 'receita', valor: 1000, data: '2026-04-08' }),
@@ -44,7 +44,7 @@ describe('financialInsights utils', () => {
     expect(projection.projectedBalance).toBeCloseTo(6000, 2);
   });
 
-  it('compara categorias entre mes atual e mes anterior', () => {
+  it('compara categorias entre mês atual e mês anterior', () => {
     const transactions: Transaction[] = [
       baseTransaction({ id: 'c1', categoria: 'Mercado', valor: 600, data: '2026-04-05' }),
       baseTransaction({ id: 'c2', categoria: 'Mercado', valor: 300, data: '2026-03-05' }),
@@ -66,7 +66,7 @@ describe('financialInsights utils', () => {
     expect(transporte?.percentageChange).toBe(-100);
   });
 
-  it('gera insights automaticos para aumento e reducao relevantes', () => {
+  it('gera insights automáticos para aumento e redução relevantes', () => {
     const comparisons = [
       {
         categoryKey: 'mercado',
@@ -92,7 +92,7 @@ describe('financialInsights utils', () => {
     expect(insights.some((item) => item.kind === 'decrease')).toBe(true);
   });
 
-  it('detecta anomalia somente com historico minimo e acima do limiar', () => {
+  it('detecta anomalia somente com histórico mínimo e acima do limiar', () => {
     const transactions: Transaction[] = [
       baseTransaction({ id: 'h1', categoria: 'Saude', valor: 100, data: '2026-01-10' }),
       baseTransaction({ id: 'h2', categoria: 'Saude', valor: 120, data: '2026-02-10' }),
@@ -109,7 +109,7 @@ describe('financialInsights utils', () => {
     expect(anomalies[0].value).toBe(260);
   });
 
-  it('constroi historico ordenado por data de geracao', () => {
+  it('constrói histórico ordenado por data de geração', () => {
     const transactions: Transaction[] = [
       baseTransaction({ id: 'm1', categoria: 'Mercado', valor: 300, data: '2026-03-08' }),
       baseTransaction({ id: 'm2', categoria: 'Mercado', valor: 700, data: '2026-04-08' }),

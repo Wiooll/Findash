@@ -168,7 +168,7 @@ export const generateSpendingInsights = (
       const absoluteChange = comparison.absoluteChange;
 
       if (percentageChange >= INCREASE_THRESHOLD_PERCENT) {
-        const summary = `${comparison.categoryName}: aumento de ${absolutePercent.toFixed(1)}% (${Math.abs(absoluteChange).toFixed(2)}) em relacao ao mes anterior.`;
+        const summary = `${comparison.categoryName}: aumento de ${absolutePercent.toFixed(1)}% (${Math.abs(absoluteChange).toFixed(2)}) em relação ao mês anterior.`;
         alerts.push({
           id: createStableId('insight_inc', [comparison.categoryKey, stamp]),
           kind: 'increase',
@@ -184,7 +184,7 @@ export const generateSpendingInsights = (
       }
 
       if (percentageChange <= DECREASE_THRESHOLD_PERCENT) {
-        const summary = `${comparison.categoryName}: reducao de ${absolutePercent.toFixed(1)}% (${Math.abs(absoluteChange).toFixed(2)}) em relacao ao mes anterior.`;
+        const summary = `${comparison.categoryName}: redução de ${absolutePercent.toFixed(1)}% (${Math.abs(absoluteChange).toFixed(2)}) em relação ao mês anterior.`;
         alerts.push({
           id: createStableId('insight_dec', [comparison.categoryKey, stamp]),
           kind: 'decrease',
@@ -253,7 +253,7 @@ export const detectExpenseAnomalies = (
         kind: 'anomaly',
         categoryKey,
         categoryName: labelMap.get(categoryKey) || categoryKey,
-        summary: `${transaction.categoria}: despesa de ${value.toFixed(2)} acima do padrao historico (${baselineAverage.toFixed(2)}).`,
+        summary: `${transaction.categoria}: despesa de ${value.toFixed(2)} acima do padrão histórico (${baselineAverage.toFixed(2)}).`,
         value,
         baselineAverage,
         threshold,
