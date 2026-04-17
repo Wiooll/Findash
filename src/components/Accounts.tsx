@@ -169,7 +169,7 @@ export const Accounts = () => {
         data: new Date().toISOString().split('T')[0],
         descricao: 'Transferência',
       });
-    } catch (err) {
+    } catch {
       setTransferError('Erro ao registrar transferência. Tente novamente.');
     } finally {
       setSavingTransfer(false);

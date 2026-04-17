@@ -5,6 +5,7 @@ export type TipoConta = 'corrente' | 'poupanca' | 'dinheiro' | 'investimento';
 
 export interface Transaction {
   id: string;
+  userId?: string;
   data: string; // YYYY-MM-DD
   descricao: string;
   categoria: string;
@@ -25,12 +26,14 @@ export interface Transaction {
 
 export interface Categoria {
   id: string;
+  userId?: string;
   nome: string;
   tipo: TransactionType | 'ambos';
 }
 
 export interface RecurringTransaction {
   id: string;
+  userId?: string;
   descricao: string;
   categoria: string;
   tipo: TransactionType;
@@ -46,6 +49,7 @@ export interface RecurringTransaction {
 
 export interface CategoryBudget {
   id: string;
+  userId?: string;
   categoryId: string;
   monthlyLimit: number;
   createdAt: string;
@@ -60,6 +64,7 @@ export interface AppConfig {
 // Sprint 2: Conta/Carteira
 export interface Conta {
   id: string;
+  userId?: string;
   nome: string;
   tipo: TipoConta;
   saldoInicial: number;
@@ -72,6 +77,7 @@ export interface Conta {
 // Sprint 2: Cartão de crédito
 export interface CartaoCredito {
   id: string;
+  userId?: string;
   nome: string;
   limite: number;
   diaFechamento: number;   // 1-28
@@ -85,6 +91,7 @@ export interface CartaoCredito {
 // Sprint 2: Status persistido de uma fatura (o total é calculado via useMemo)
 export interface FaturaStatus {
   id: string;              // `fatura_${cartaoId}_${anoMes}`
+  userId?: string;
   cartaoId: string;
   anoMes: string;          // YYYY-MM
   status: 'aberta' | 'fechada' | 'paga';

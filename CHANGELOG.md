@@ -2,6 +2,21 @@
 
 Todas as mudanças relevantes de versão deste projeto serão documentadas neste arquivo.
 
+## [4.1.0] - 2026-04-17
+
+### Adicionado
+- Autenticacao com Firebase Auth via Google (popup).
+- Isolamento de dados por usuario no Firestore com estrutura `users/{uid}/...`.
+- Importacao de transacoes via CSV com validacao por linha e feedback de erro.
+- Exportacao de transacoes em CSV, Excel (`.xls`) e PDF, nos modos resumo e detalhado.
+- Regras de seguranca em `firestore.rules` para bloquear acesso cruzado entre usuarios.
+- Testes unitarios para calculos financeiros criticos em `financialCalculations`.
+- Testes de integracao para CRUD de transacoes/categorias e isolamento por usuario.
+
+### Alterado
+- Contexto financeiro adaptado para persistir e consultar dados no escopo do usuario autenticado.
+- Validacoes de formulario e mensagens de erro revisadas nas telas de transacoes e categorias.
+- Versao do aplicativo exibida na interface e atualizada para `4.1.0`.
 O formato segue uma adaptação de [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 
 ## [2.1.0] - 2026-04-15

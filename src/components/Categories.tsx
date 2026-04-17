@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import type { Categoria, TransactionType } from '../types';
 import { Plus, Edit2, Trash2, Check, X, Tag, Wallet, AlertTriangle } from 'lucide-react';
@@ -24,6 +24,7 @@ export const Categories = () => {
     nome: '',
     tipo: 'despesa',
   });
+  const [formError, setFormError] = useState('');
 
   const [budgetDrafts, setBudgetDrafts] = useState<Record<string, string>>({});
 
@@ -50,15 +51,6 @@ export const Categories = () => {
     return map;
   }, [categoryBudgets]);
 
-  useEffect(() => {
-    const nextDrafts: Record<string, string> = {};
-    categories.forEach((category) => {
-      const budget = budgetByCategoryId.get(category.id);
-      nextDrafts[category.id] = budget ? String(budget.monthlyLimit) : '';
-    });
-    setBudgetDrafts(nextDrafts);
-  }, [categories, budgetByCategoryId]);
-
   const handleEditClick = (category: Categoria) => {
     setEditingId(category.id);
     setEditForm(category);
@@ -66,8 +58,18 @@ export const Categories = () => {
 
   const handleEditSave = async () => {
     if (editingId && editForm) {
-      await updateCategory(editingId, editForm);
-      setEditingId(null);
+      const nome = editForm.nome?.trim() || '';
+      if (nome.length < 2) {
+        setFormError('Informe um nome de categoria com pelo menos 2 caracteres.');
+        return;
+      }
+      try {
+        await updateCategory(editingId, { ...editForm, nome });
+        setEditingId(null);
+        setFormError('');
+      } catch {
+        setFormError('Não foi possível salvar a categoria agora. Tente novamente.');
+      }
     }
   };
 
@@ -77,10 +79,19 @@ export const Categories = () => {
   };
 
   const handleAddSave = async () => {
-    if (addForm.nome) {
-      await addCategory(addForm as Omit<Categoria, 'id'>);
+    const nome = addForm.nome?.trim() || '';
+    if (nome.length < 2) {
+      setFormError('Informe um nome de categoria com pelo menos 2 caracteres.');
+      return;
+    }
+
+    try {
+      await addCategory({ ...addForm, nome } as Omit<Categoria, 'id'>);
       setIsAdding(false);
       setAddForm({ nome: '', tipo: 'despesa' });
+      setFormError('');
+    } catch {
+      setFormError('Não foi possível criar a categoria agora. Tente novamente.');
     }
   };
 
@@ -91,12 +102,21 @@ export const Categories = () => {
 
     if (!draft || Number.isNaN(value) || value <= 0) {
       if (existingBudget) {
-        await deleteCategoryBudget(existingBudget.id);
+        try {
+          await deleteCategoryBudget(existingBudget.id);
+        } catch {
+          setFormError('Não foi possível atualizar o orçamento da categoria.');
+        }
       }
       return;
     }
 
-    await upsertCategoryBudget(categoryId, value);
+    try {
+      await upsertCategoryBudget(categoryId, value);
+      setFormError('');
+    } catch {
+      setFormError('Não foi possível salvar o orçamento da categoria.');
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -118,6 +138,11 @@ export const Categories = () => {
       </div>
 
       <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        {formError && (
+          <div className="mx-6 mt-4 px-4 py-3 rounded-lg border border-danger/40 bg-danger/10 text-sm text-danger">
+            {formError}
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
@@ -235,7 +260,7 @@ export const Categories = () => {
                                 <input
                                   type="number"
                                   step="0.01"
-                                  value={budgetDrafts[category.id] || ''}
+                                  value={budgetDrafts[category.id] ?? (budget ? String(budget.monthlyLimit) : '')}
                                   onChange={(e) => setBudgetDrafts((current) => ({ ...current, [category.id]: e.target.value }))}
                                   className="w-full pl-8 pr-3 py-1.5 bg-background border border-input rounded-md text-sm"
                                   placeholder="0,00"
@@ -282,7 +307,17 @@ export const Categories = () => {
                             <button onClick={() => handleEditClick(category)} className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Editar">
                               <Edit2 size={16} />
                             </button>
-                            <button onClick={() => deleteCategory(category.id)} className="p-2 text-muted-foreground hover:text-danger hover:bg-danger/10 rounded-md transition-colors" title="Excluir">
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await deleteCategory(category.id);
+                                } catch {
+                                  setFormError('Não foi possível excluir a categoria.');
+                                }
+                              }}
+                              className="p-2 text-muted-foreground hover:text-danger hover:bg-danger/10 rounded-md transition-colors"
+                              title="Excluir"
+                            >
                               <Trash2 size={16} />
                             </button>
                           </div>

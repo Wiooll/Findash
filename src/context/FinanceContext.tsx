@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+/* eslint-disable react-refresh/only-export-components, react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type {
   AppConfig,
@@ -15,6 +16,7 @@ import type {
 import {
   collection,
   doc,
+  type CollectionReference,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -33,6 +35,7 @@ import {
 } from 'date-fns';
 import { db } from '../services/firebase';
 import { v4 as uuid } from 'uuid';
+import { useAuth } from './AuthContext';
 
 interface FinanceContextType {
   // Estado existente
@@ -165,6 +168,7 @@ const getAnoMesFaturaByTransactionDate = (cartao: CartaoCredito, dataTransacao: 
 };
 
 export const FinanceProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Categoria[]>(defaultCategories);
   const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
@@ -174,26 +178,54 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const [contas, setContas] = useState<Conta[]>([]);
   const [cartoesCredito, setCartoesCredito] = useState<CartaoCredito[]>([]);
   const [faturaStatuses, setFaturaStatuses] = useState<FaturaStatus[]>([]);
+  const userId = user?.uid || null;
+
+  const getUserCollection = useCallback(<T,>(collectionName: string): CollectionReference<T> => {
+    if (!userId) {
+      throw new Error('Usuario nao autenticado.');
+    }
+
+    return collection(db, 'users', userId, collectionName) as CollectionReference<T>;
+  }, [userId]);
+
+  const getUserDoc = useCallback((collectionName: string, documentId: string) => {
+    if (!userId) {
+      throw new Error('Usuario nao autenticado.');
+    }
+
+    return doc(db, 'users', userId, collectionName, documentId);
+  }, [userId]);
 
   const transactionsIdSet = useMemo(() => new Set(transactions.map((t) => t.id)), [transactions]);
 
   // ── Syncs Firestore ─────────────────────────────────────────────────────────
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'transactions'), (snapshot) => {
+    if (!userId) {
+      setTransactions([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<Transaction>('transactions'), (snapshot) => {
       const data: Transaction[] = [];
       snapshot.forEach((docSnap) => data.push(docSnap.data() as Transaction));
       setTransactions(data);
     });
     return () => unsubscribe();
-  }, []);
+  }, [getUserCollection, userId]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'categories'), (snapshot) => {
+    if (!userId) {
+      setCategories(defaultCategories);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<Categoria>('categories'), (snapshot) => {
       if (snapshot.empty) {
         defaultCategories.forEach((cat) => {
-          setDoc(doc(db, 'categories', cat.id), cat);
+          void setDoc(getUserDoc('categories', cat.id), { ...cat, userId });
         });
+        setCategories(defaultCategories);
       } else {
         const data: Categoria[] = [];
         snapshot.forEach((docSnap) => data.push(docSnap.data() as Categoria));
@@ -201,28 +233,47 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [getUserCollection, userId]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'recurringTransactions'), (snapshot) => {
-      const data: RecurringTransaction[] = [];
-      snapshot.forEach((docSnap) => data.push(docSnap.data() as RecurringTransaction));
-      setRecurringTransactions(data);
-    });
+    if (!userId) {
+      setRecurringTransactions([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(
+      getUserCollection<RecurringTransaction>('recurringTransactions'),
+      (snapshot) => {
+        const data: RecurringTransaction[] = [];
+        snapshot.forEach((docSnap) => data.push(docSnap.data() as RecurringTransaction));
+        setRecurringTransactions(data);
+      },
+    );
     return () => unsubscribe();
-  }, []);
+  }, [getUserDoc, userId]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'categoryBudgets'), (snapshot) => {
+    if (!userId) {
+      setCategoryBudgets([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<CategoryBudget>('categoryBudgets'), (snapshot) => {
       const data: CategoryBudget[] = [];
       snapshot.forEach((docSnap) => data.push(docSnap.data() as CategoryBudget));
       setCategoryBudgets(data);
     });
     return () => unsubscribe();
-  }, []);
+  }, [getUserCollection, userId]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, 'config', 'main'), (docSnap) => {
+    if (!userId) {
+      setConfig({ metaEconomiaMensal: 1000, isDarkMode: false });
+      document.documentElement.classList.remove('dark');
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserDoc('config', 'main'), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data() as AppConfig;
         setConfig(data);
@@ -232,45 +283,65 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           document.documentElement.classList.remove('dark');
         }
       } else {
-        setDoc(doc(db, 'config', 'main'), { metaEconomiaMensal: 1000, isDarkMode: false });
+        void setDoc(getUserDoc('config', 'main'), {
+          metaEconomiaMensal: 1000,
+          isDarkMode: false,
+          userId,
+        });
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [getUserCollection, userId]);
 
   // Sprint 2: Sync Contas
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'contas'), (snapshot) => {
+    if (!userId) {
+      setContas([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<Conta>('contas'), (snapshot) => {
       const data: Conta[] = [];
       snapshot.forEach((docSnap) => data.push(docSnap.data() as Conta));
       setContas(data);
     });
     return () => unsubscribe();
-  }, []);
+  }, [getUserCollection, userId]);
 
   // Sprint 2: Sync Cartões
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'cartoesCredito'), (snapshot) => {
+    if (!userId) {
+      setCartoesCredito([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<CartaoCredito>('cartoesCredito'), (snapshot) => {
       const data: CartaoCredito[] = [];
       snapshot.forEach((docSnap) => data.push(docSnap.data() as CartaoCredito));
       setCartoesCredito(data);
     });
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
   // Sprint 2: Sync status das faturas
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'faturaStatus'), (snapshot) => {
+    if (!userId) {
+      setFaturaStatuses([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<FaturaStatus>('faturaStatus'), (snapshot) => {
       const data: FaturaStatus[] = [];
       snapshot.forEach((docSnap) => data.push(docSnap.data() as FaturaStatus));
       setFaturaStatuses(data);
     });
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
   // ── Geração de recorrências ──────────────────────────────────────────────────
 
   useEffect(() => {
+    if (!userId) return;
     if (recurringTransactions.length === 0) return;
 
     const syncRecurringEntries = async () => {
@@ -297,6 +368,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           if (!existingIds.has(txId)) {
             const transaction: Transaction = {
               id: txId,
+              userId,
               data: txDate,
               descricao: rule.descricao,
               categoria: rule.categoria,
@@ -307,7 +379,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
               generatedByRecurrence: true,
             };
 
-            await setDoc(doc(db, 'transactions', txId), transaction);
+            await setDoc(getUserDoc('transactions', txId), transaction);
             existingIds.add(txId);
           }
 
@@ -317,7 +389,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     syncRecurringEntries();
-  }, [recurringTransactions, transactionsIdSet]);
+  }, [getUserDoc, recurringTransactions, transactionsIdSet, userId]);
 
   // ── Helpers calculados ────────────────────────────────────────────────────────
 
@@ -407,18 +479,26 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const stripUndefined = <T extends object>(obj: T): T =>
     Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as T;
 
+  const ensureUserId = () => {
+    if (!userId) throw new Error('Usuario nao autenticado.');
+    return userId;
+  };
+
   const addTransaction = async (t: Omit<Transaction, 'id'>) => {
+    const ownerId = ensureUserId();
     const newId = uuid();
-    const newTx = stripUndefined({ ...t, id: newId });
-    await setDoc(doc(db, 'transactions', newId), newTx);
+    const newTx = stripUndefined({ ...t, id: newId, userId: ownerId });
+    await setDoc(getUserDoc('transactions', newId), newTx);
   };
 
   const updateTransaction = async (id: string, t: Partial<Transaction>) => {
-    await updateDoc(doc(db, 'transactions', id), t);
+    ensureUserId();
+    await updateDoc(getUserDoc('transactions', id), t);
   };
 
   const deleteTransaction = async (id: string) => {
-    await deleteDoc(doc(db, 'transactions', id));
+    ensureUserId();
+    await deleteDoc(getUserDoc('transactions', id));
   };
 
   /** Cria N transações para uma compra parcelada, distribuídas nos meses seguintes */
@@ -426,6 +506,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     base: Omit<Transaction, 'id' | 'parcelaAtual' | 'totalParcelas' | 'parcelaGrupoId'>,
     totalParcelas: number,
   ) => {
+    const ownerId = ensureUserId();
     const grupoId = uuid();
     const dataBase = parseISO(base.data);
 
@@ -435,6 +516,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       const tx: Transaction = stripUndefined({
         ...base,
         id,
+        userId: ownerId,
         data: dataVencimento,
         parcelaAtual: i + 1,
         totalParcelas,
@@ -444,7 +526,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       return tx;
     });
 
-    await Promise.all(batch.map((tx) => setDoc(doc(db, 'transactions', tx.id), tx)));
+    await Promise.all(batch.map((tx) => setDoc(getUserDoc('transactions', tx.id), tx)));
   };
 
   /** Cria uma transferência entre contas (2 transações vinculadas) */
@@ -461,11 +543,13 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     data: string;
     descricao?: string;
   }) => {
+    const ownerId = ensureUserId();
     const idSaida = uuid();
     const idEntrada = uuid();
 
     const txSaida: Transaction = {
       id: idSaida,
+      userId: ownerId,
       data,
       descricao,
       categoria: 'Transferência',
@@ -479,6 +563,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
 
     const txEntrada: Transaction = {
       id: idEntrada,
+      userId: ownerId,
       data,
       descricao,
       categoria: 'Transferência',
@@ -491,25 +576,28 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await Promise.all([
-      setDoc(doc(db, 'transactions', idSaida), txSaida),
-      setDoc(doc(db, 'transactions', idEntrada), txEntrada),
+      setDoc(getUserDoc('transactions', idSaida), txSaida),
+      setDoc(getUserDoc('transactions', idEntrada), txEntrada),
     ]);
   };
 
   // ── CRUD Categorias ──────────────────────────────────────────────────────────
 
   const addCategory = async (c: Omit<Categoria, 'id'>) => {
+    const ownerId = ensureUserId();
     const newId = uuid();
-    const newCat = { ...c, id: newId };
-    await setDoc(doc(db, 'categories', newId), newCat);
+    const newCat = { ...c, id: newId, userId: ownerId };
+    await setDoc(getUserDoc('categories', newId), newCat);
   };
 
   const updateCategory = async (id: string, c: Partial<Categoria>) => {
-    await updateDoc(doc(db, 'categories', id), c);
+    ensureUserId();
+    await updateDoc(getUserDoc('categories', id), c);
   };
 
   const deleteCategory = async (id: string) => {
-    await deleteDoc(doc(db, 'categories', id));
+    ensureUserId();
+    await deleteDoc(getUserDoc('categories', id));
   };
 
   // ── CRUD Recorrências ────────────────────────────────────────────────────────
@@ -517,27 +605,31 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const addRecurringTransaction = async (
     r: Omit<RecurringTransaction, 'id' | 'createdAt' | 'updatedAt'>,
   ) => {
+    const ownerId = ensureUserId();
     const newId = uuid();
     const now = new Date().toISOString();
     const recurring: RecurringTransaction = {
       ...r,
       id: newId,
+      userId: ownerId,
       createdAt: now,
       updatedAt: now,
     };
 
-    await setDoc(doc(db, 'recurringTransactions', newId), recurring);
+    await setDoc(getUserDoc('recurringTransactions', newId), recurring);
   };
 
   const updateRecurringTransaction = async (id: string, r: Partial<RecurringTransaction>) => {
-    await updateDoc(doc(db, 'recurringTransactions', id), {
+    ensureUserId();
+    await updateDoc(getUserDoc('recurringTransactions', id), {
       ...r,
       updatedAt: new Date().toISOString(),
     });
   };
 
   const deleteRecurringTransaction = async (id: string) => {
-    await deleteDoc(doc(db, 'recurringTransactions', id));
+    ensureUserId();
+    await deleteDoc(getUserDoc('recurringTransactions', id));
   };
 
   const toggleRecurringTransaction = async (id: string, active: boolean) => {
@@ -547,11 +639,12 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   // ── CRUD Orçamentos ──────────────────────────────────────────────────────────
 
   const upsertCategoryBudget = async (categoryId: string, monthlyLimit: number) => {
+    const ownerId = ensureUserId();
     const normalizedLimit = Number(monthlyLimit);
     const existing = categoryBudgets.find((budget) => budget.categoryId === categoryId);
 
     if (existing) {
-      await updateDoc(doc(db, 'categoryBudgets', existing.id), {
+      await updateDoc(getUserDoc('categoryBudgets', existing.id), {
         monthlyLimit: normalizedLimit,
         updatedAt: new Date().toISOString(),
       });
@@ -562,23 +655,26 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     const now = new Date().toISOString();
     const budget: CategoryBudget = {
       id: newId,
+      userId: ownerId,
       categoryId,
       monthlyLimit: normalizedLimit,
       createdAt: now,
       updatedAt: now,
     };
 
-    await setDoc(doc(db, 'categoryBudgets', newId), budget);
+    await setDoc(getUserDoc('categoryBudgets', newId), budget);
   };
 
   const deleteCategoryBudget = async (id: string) => {
-    await deleteDoc(doc(db, 'categoryBudgets', id));
+    ensureUserId();
+    await deleteDoc(getUserDoc('categoryBudgets', id));
   };
 
   // ── CRUD Config ──────────────────────────────────────────────────────────────
 
   const updateConfig = async (c: Partial<AppConfig>) => {
-    await setDoc(doc(db, 'config', 'main'), c, { merge: true });
+    const ownerId = ensureUserId();
+    await setDoc(getUserDoc('config', 'main'), { ...c, userId: ownerId }, { merge: true });
   };
 
   const toggleDarkMode = () => {
@@ -588,40 +684,47 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   // ── CRUD Contas ──────────────────────────────────────────────────────────────
 
   const addConta = async (c: Omit<Conta, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const ownerId = ensureUserId();
     const newId = uuid();
     const now = new Date().toISOString();
-    const conta: Conta = { ...c, id: newId, createdAt: now, updatedAt: now };
-    await setDoc(doc(db, 'contas', newId), conta);
+    const conta: Conta = { ...c, id: newId, userId: ownerId, createdAt: now, updatedAt: now };
+    await setDoc(getUserDoc('contas', newId), conta);
   };
 
   const updateConta = async (id: string, c: Partial<Conta>) => {
-    await updateDoc(doc(db, 'contas', id), { ...c, updatedAt: new Date().toISOString() });
+    ensureUserId();
+    await updateDoc(getUserDoc('contas', id), { ...c, updatedAt: new Date().toISOString() });
   };
 
   const deleteConta = async (id: string) => {
-    await deleteDoc(doc(db, 'contas', id));
+    ensureUserId();
+    await deleteDoc(getUserDoc('contas', id));
   };
 
   // ── CRUD Cartões ─────────────────────────────────────────────────────────────
 
   const addCartaoCredito = async (c: Omit<CartaoCredito, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const ownerId = ensureUserId();
     const newId = uuid();
     const now = new Date().toISOString();
-    const cartao: CartaoCredito = { ...c, id: newId, createdAt: now, updatedAt: now };
-    await setDoc(doc(db, 'cartoesCredito', newId), cartao);
+    const cartao: CartaoCredito = { ...c, id: newId, userId: ownerId, createdAt: now, updatedAt: now };
+    await setDoc(getUserDoc('cartoesCredito', newId), cartao);
   };
 
   const updateCartaoCredito = async (id: string, c: Partial<CartaoCredito>) => {
-    await updateDoc(doc(db, 'cartoesCredito', id), { ...c, updatedAt: new Date().toISOString() });
+    ensureUserId();
+    await updateDoc(getUserDoc('cartoesCredito', id), { ...c, updatedAt: new Date().toISOString() });
   };
 
   const deleteCartaoCredito = async (id: string) => {
-    await deleteDoc(doc(db, 'cartoesCredito', id));
+    ensureUserId();
+    await deleteDoc(getUserDoc('cartoesCredito', id));
   };
 
   // ── Operações de Fatura ──────────────────────────────────────────────────────
 
   const pagarFatura = async (cartaoId: string, anoMes: string) => {
+    const ownerId = ensureUserId();
     const cartao = cartoesCredito.find((c) => c.id === cartaoId);
     if (!cartao) return;
 
@@ -635,18 +738,20 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     // Persiste o status como 'paga'
     const statusDoc: FaturaStatus = {
       id: faturaId,
+      userId: ownerId,
       cartaoId,
       anoMes,
       status: 'paga',
       dataFechamento: format(dataFechamento, 'yyyy-MM-dd'),
       dataVencimento: format(dataVencimento, 'yyyy-MM-dd'),
     };
-    await setDoc(doc(db, 'faturaStatus', faturaId), statusDoc);
+    await setDoc(getUserDoc('faturaStatus', faturaId), statusDoc);
 
     // Registra saída na conta de débito vinculada (se houver e se total > 0)
     if (cartao.contaDebitoId && totalFatura > 0) {
       const txPagamento: Transaction = {
         id: uuid(),
+        userId: ownerId,
         data: format(dataVencimento, 'yyyy-MM-dd'),
         descricao: `Pagamento fatura ${cartao.nome} (${anoMes})`,
         categoria: 'Fatura de Cartão',
@@ -655,7 +760,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
         formaPagamento: 'Débito',
         contaId: cartao.contaDebitoId,
       };
-      await setDoc(doc(db, 'transactions', txPagamento.id), txPagamento);
+      await setDoc(getUserDoc('transactions', txPagamento.id), txPagamento);
     }
   };
 

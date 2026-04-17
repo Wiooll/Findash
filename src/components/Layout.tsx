@@ -13,6 +13,8 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
+import { useAuth } from '../context/AuthContext';
+import { APP_NAME, APP_VERSION } from '../constants/app';
 import { cn } from '../utils/lib';
 
 interface LayoutProps {
@@ -23,6 +25,7 @@ interface LayoutProps {
 
 export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
   const { config, toggleDarkMode } = useFinance();
+  const { user, logout } = useAuth();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -43,7 +46,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
             <Wallet size={24} />
           </div>
           <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
-            FinDash
+            {APP_NAME}
           </h1>
         </div>
 
@@ -69,6 +72,12 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
         </nav>
 
         <div className="mt-auto pt-4 border-t border-border">
+          <div className="px-4 pb-3 space-y-1">
+            <p className="text-xs text-muted-foreground truncate">
+              {user?.email || 'Usuário autenticado'}
+            </p>
+            <p className="text-xs text-muted-foreground">Versão {APP_VERSION}</p>
+          </div>
           <button
             onClick={toggleDarkMode}
             className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
@@ -76,13 +85,19 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
             <span className="text-sm font-medium">Tema Escuro</span>
             {config.isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
+          <button
+            onClick={() => void logout()}
+            className="mt-2 w-full px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-all text-left"
+          >
+            Sair da conta
+          </button>
         </div>
       </aside>
 
       <div className="md:hidden flex items-center justify-between bg-card p-4 border-b border-border z-10 sticky top-0">
         <div className="flex items-center gap-2">
           <Wallet size={20} className="text-primary" />
-          <h1 className="text-lg font-bold">FinDash</h1>
+          <h1 className="text-lg font-bold">{APP_NAME}</h1>
         </div>
         <button onClick={toggleDarkMode} className="p-2 bg-secondary rounded-full">
           {config.isDarkMode ? <Sun size={16} /> : <Moon size={16} />}

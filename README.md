@@ -98,3 +98,27 @@ npm run dev
   - Insights automáticos de aumento/redução de gastos por categoria.
   - Detecção de despesa fora do padrão com regra simples e explicável.
   - Nova aba "Insights" com histórico cronológico de alertas.
+
+## Sprint 4 - Produtividade, Seguranca e Qualidade (v4.1.0)
+
+- Autenticacao com Firebase Auth via Google.
+- Isolamento de dados por usuario no Firestore em `users/{uid}/...`.
+- Importacao de transacoes por CSV com validacao por linha e relatorio de erros.
+- Exportacao de transacoes em CSV, Excel (`.xls`) e PDF (resumo e detalhado).
+- Reforco de validacoes de formularios e mensagens de erro em pt-BR.
+- Testes unitarios para calculos financeiros criticos.
+- Testes de integracao para CRUD de transacoes/categorias e isolamento por usuario.
+- Versao visivel no layout da aplicacao.
+
+## Firestore Rules
+
+- Arquivo adicionado: `firestore.rules`.
+- Estrategia: apenas o usuario autenticado pode ler/escrever seus dados em `users/{uid}`.
+- Publicacao recomendada:
+  - `firebase deploy --only firestore:rules --project <seu-projeto>`
+
+## Configuracao do Login Google no Firebase
+
+- No Firebase Console, acesse `Authentication > Sign-in method`.
+- Habilite o provedor `Google`.
+- Em ambiente local, valide o dominio de desenvolvimento (`localhost`) em `Authentication > Settings > Authorized domains`.

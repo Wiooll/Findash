@@ -30,6 +30,7 @@ import {
   calculateCategoryMonthComparison,
   calculateMonthEndProjection,
 } from '../utils/financialInsights';
+import { calculateDashboardTotals } from '../utils/financialCalculations';
 
 const COLORS = [
   '#0088FE',
@@ -56,35 +57,7 @@ export const Dashboard = () => {
     'yyyy-MM',
   );
 
-  const stats = useMemo(() => {
-    let receitas = 0;
-    let despesas = 0;
-    let mesAtualReceitas = 0;
-    let mesAtualDespesas = 0;
-
-    transactions.forEach((transaction) => {
-      if (transaction.tipo === 'transferencia') return;
-      const value = Number(transaction.valor);
-      const isCurrent = isSameMonth(parseISO(transaction.data), currentMonth);
-
-      if (transaction.tipo === 'receita') {
-        receitas += value;
-        if (isCurrent) mesAtualReceitas += value;
-      } else {
-        despesas += value;
-        if (isCurrent) mesAtualDespesas += value;
-      }
-    });
-
-    return {
-      saldo: receitas - despesas,
-      receitas,
-      despesas,
-      mesAtualReceitas,
-      mesAtualDespesas,
-      economiaMes: mesAtualReceitas - mesAtualDespesas,
-    };
-  }, [transactions, currentMonth]);
+  const stats = useMemo(() => calculateDashboardTotals(transactions, new Date()), [transactions]);
 
   const projection = useMemo(
     () => calculateMonthEndProjection(transactions, new Date()),

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { AuthGate } from './components/AuthGate';
 import { FinanceProvider } from './context/FinanceContext';
+import { AuthProvider } from './context/AuthContext';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { TransactionsTable } from './components/TransactionsTable';
@@ -29,9 +31,13 @@ function AppContent() {
 
 function App() {
   return (
-    <FinanceProvider>
-      <AppContent />
-    </FinanceProvider>
+    <AuthProvider>
+      <AuthGate>
+        <FinanceProvider>
+          <AppContent />
+        </FinanceProvider>
+      </AuthGate>
+    </AuthProvider>
   );
 }
 

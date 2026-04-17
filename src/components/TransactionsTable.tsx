@@ -1,8 +1,28 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import type { Transaction, TransactionType, PaymentMethod } from '../types';
-import { Plus, Edit2, Trash2, Check, X, Search, Filter, Layers } from 'lucide-react';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Check,
+  X,
+  Search,
+  Filter,
+  Layers,
+  Upload,
+  Download,
+  FileSpreadsheet,
+  FileText,
+} from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import {
+  exportTransactionsCsv,
+  exportTransactionsExcel,
+  exportTransactionsPdf,
+  parseTransactionsCsv,
+  type ExportMode,
+} from '../utils/transactionImportExport';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['Dinheiro', 'Cartão de crédito', 'Débito', 'PIX'];
 
@@ -21,6 +41,48 @@ const emptyAddForm = (categories: { nome: string }[]): Partial<Transaction> & {
   parcelado: false,
   numParcelas: 2,
 });
+
+const getValidationError = (form: Partial<Transaction> & { parcelado?: boolean; numParcelas?: number }) => {
+  if (!form.data || Number.isNaN(parseISO(form.data).getTime())) {
+    return 'Informe uma data válida no formato YYYY-MM-DD.';
+  }
+  if (!form.descricao || form.descricao.trim().length < 2) {
+    return 'Informe uma descrição com pelo menos 2 caracteres.';
+  }
+  if (!form.categoria) {
+    return 'Selecione uma categoria.';
+  }
+  if (!form.tipo) {
+    return 'Selecione um tipo de transação.';
+  }
+  if (!form.formaPagamento) {
+    return 'Selecione uma forma de pagamento.';
+  }
+  if (form.valor === undefined || !Number.isFinite(Number(form.valor)) || Number(form.valor) <= 0) {
+    return 'Informe um valor numérico maior que zero.';
+  }
+
+  const isCartaoPagamento = form.formaPagamento === 'Cartão de crédito';
+  if (isCartaoPagamento && !form.cartaoId) {
+    return 'Selecione o cartão de crédito para esta transação.';
+  }
+  if (!isCartaoPagamento && !form.contaId) {
+    return 'Selecione a conta para esta transação.';
+  }
+
+  if (form.parcelado && (!form.numParcelas || form.numParcelas < 2 || form.numParcelas > 48)) {
+    return 'Número de parcelas inválido. Use entre 2 e 48.';
+  }
+
+  return '';
+};
+
+const getExportFileBase = (mode: ExportMode) => {
+  const now = format(new Date(), 'yyyyMMdd_HHmm');
+  return `findash_${mode}_${now}`;
+};
+
+const genericSaveError = 'Não foi possível salvar os dados agora. Tente novamente.';
 
 export const TransactionsTable = () => {
   const {
@@ -43,6 +105,10 @@ export const TransactionsTable = () => {
 
   const [isAdding, setIsAdding] = useState(false);
   const [addForm, setAddForm] = useState(emptyAddForm(categories));
+  const [formError, setFormError] = useState('');
+  const [importFeedback, setImportFeedback] = useState('');
+  const [exportMode, setExportMode] = useState<ExportMode>('detalhado');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const mesesOptions = useMemo(() => {
     const meses = new Set<string>();
@@ -73,10 +139,20 @@ export const TransactionsTable = () => {
     setEditForm(t);
   };
 
-  const handleEditSave = () => {
+  const handleEditSave = async () => {
     if (editingId && editForm) {
-      updateTransaction(editingId, editForm);
-      setEditingId(null);
+      const error = getValidationError({ ...editForm, parcelado: false });
+      if (error) {
+        setFormError(error);
+        return;
+      }
+      try {
+        await updateTransaction(editingId, editForm);
+        setEditingId(null);
+        setFormError('');
+      } catch {
+        setFormError(genericSaveError);
+      }
     }
   };
 
@@ -86,14 +162,9 @@ export const TransactionsTable = () => {
   };
 
   const handleAddSave = async () => {
-    if (
-      !addForm.descricao ||
-      !addForm.data ||
-      !addForm.categoria ||
-      addForm.valor === undefined ||
-      addForm.valor <= 0
-    ) {
-      alert('Por favor, preencha todos os campos obrigatórios com valores válidos.');
+    const error = getValidationError(addForm);
+    if (error) {
+      setFormError(error);
       return;
     }
 
@@ -111,14 +182,19 @@ export const TransactionsTable = () => {
       ...(!isCartaoPagamento && addForm.contaId ? { contaId: addForm.contaId } : {}),
     };
 
-    if (addForm.parcelado && addForm.numParcelas && addForm.numParcelas >= 2) {
-      await addParcelado(base, addForm.numParcelas);
-    } else {
-      await addTransaction(base);
-    }
+    try {
+      if (addForm.parcelado && addForm.numParcelas && addForm.numParcelas >= 2) {
+        await addParcelado(base, addForm.numParcelas);
+      } else {
+        await addTransaction(base);
+      }
 
-    setIsAdding(false);
-    setAddForm(emptyAddForm(categories));
+      setIsAdding(false);
+      setAddForm(emptyAddForm(categories));
+      setFormError('');
+    } catch {
+      setFormError(genericSaveError);
+    }
   };
 
   const handleDeleteTransaction = async (t: Transaction) => {
@@ -136,7 +212,60 @@ export const TransactionsTable = () => {
         }
       }
     }
-    await deleteTransaction(t.id);
+    try {
+      await deleteTransaction(t.id);
+    } catch {
+      setFormError('Não foi possível excluir a transação.');
+    }
+  };
+
+  const handleImportCsv = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const content = await file.text();
+    const result = parseTransactionsCsv(content);
+
+    if (result.validTransactions.length > 0) {
+      try {
+        await Promise.all(result.validTransactions.map((transaction) => addTransaction(transaction)));
+      } catch {
+        setImportFeedback('Falha ao persistir as transações importadas. Tente novamente.');
+        event.target.value = '';
+        return;
+      }
+    }
+
+    const successCount = result.validTransactions.length;
+    const errorCount = result.errors.length;
+    const firstErrors = result.errors.slice(0, 5).map((err) => `Linha ${err.line}: ${err.message}`);
+    setImportFeedback(
+      errorCount === 0
+        ? `Importação concluída com sucesso. ${successCount} transações importadas.`
+        : `Importação concluída com ${successCount} transações importadas e ${errorCount} erros. ${firstErrors.join(' | ')}`,
+    );
+
+    event.target.value = '';
+  };
+
+  const handleExport = (formatType: 'csv' | 'excel' | 'pdf') => {
+    const baseFileName = getExportFileBase(exportMode);
+
+    if (formatType === 'csv') {
+      exportTransactionsCsv(filteredTransactions, exportMode, `${baseFileName}.csv`);
+      return;
+    }
+
+    if (formatType === 'excel') {
+      exportTransactionsExcel(filteredTransactions, exportMode, `${baseFileName}.xls`);
+      return;
+    }
+
+    try {
+      exportTransactionsPdf(filteredTransactions, exportMode);
+    } catch {
+      setFormError('Não foi possível gerar o PDF.');
+    }
   };
 
   const formatCurrency = (val: number) =>
@@ -151,13 +280,70 @@ export const TransactionsTable = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-2xl font-bold tracking-tight">Transações</h2>
-        <button
-          onClick={() => { setIsAdding(true); setAddForm(emptyAddForm(categories)); }}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
-        >
-          <Plus size={16} /> Nova Transação
-        </button>
+        <div className="flex flex-wrap gap-2 justify-end">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="hidden"
+            onChange={(event) => void handleImportCsv(event)}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors"
+          >
+            <Upload size={15} /> Importar CSV
+          </button>
+          <select
+            value={exportMode}
+            onChange={(event) => setExportMode(event.target.value as ExportMode)}
+            className="px-3 py-2 rounded-lg border border-input bg-background text-sm"
+          >
+            <option value="detalhado">Exportação detalhada</option>
+            <option value="resumo">Exportação resumo</option>
+          </select>
+          <button
+            onClick={() => handleExport('csv')}
+            className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors"
+          >
+            <Download size={15} /> CSV
+          </button>
+          <button
+            onClick={() => handleExport('excel')}
+            className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors"
+          >
+            <FileSpreadsheet size={15} /> Excel
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors"
+          >
+            <FileText size={15} /> PDF
+          </button>
+          <button
+            onClick={() => {
+              setIsAdding(true);
+              setAddForm(emptyAddForm(categories));
+              setFormError('');
+            }}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
+          >
+            <Plus size={16} /> Nova Transação
+          </button>
+        </div>
       </div>
+
+      {importFeedback && (
+        <div className="px-4 py-3 rounded-lg border border-primary/30 bg-primary/10 text-sm text-foreground">
+          {importFeedback}
+        </div>
+      )}
+
+      {formError && (
+        <div className="px-4 py-3 rounded-lg border border-danger/40 bg-danger/10 text-sm text-danger">
+          {formError}
+        </div>
+      )}
 
       <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
         {/* Filtros */}
