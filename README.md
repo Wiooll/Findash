@@ -99,10 +99,11 @@ npm run dev
   - Detecção de despesa fora do padrão com regra simples e explicável.
   - Nova aba "Insights" com histórico cronológico de alertas.
 
-## Sprint 4 - Produtividade, Seguranca e Qualidade (v4.1.0)
+## Sprint 4 - Produtividade, Seguranca e Qualidade (v4.2.0)
 
 - Autenticacao com Firebase Auth via Google.
 - Isolamento de dados por usuario no Firestore em `users/{uid}/...`.
+- Sincronização de Dados Antigos: Usuários com dados locais ou legados agora podem migrar seus dados para a nuvem da sua conta Google logada com apenas um clique.
 - Importacao de transacoes por CSV com validacao por linha e relatorio de erros.
 - Exportacao de transacoes em CSV, Excel (`.xls`) e PDF (resumo e detalhado).
 - Reforco de validacoes de formularios e mensagens de erro em pt-BR.
