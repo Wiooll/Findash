@@ -123,3 +123,9 @@ npm run dev
 - No Firebase Console, acesse `Authentication > Sign-in method`.
 - Habilite o provedor `Google`.
 - Em ambiente local, valide o dominio de desenvolvimento (`localhost`) em `Authentication > Settings > Authorized domains`.
+
+## Sprint 4.2.1 - Landing de Entrada
+
+- A tela pública de autenticação foi evoluída para uma landing page completa com proposta de valor, recursos, fluxo de uso e FAQ.
+- CTA primário mantido em `Entrar com Google`, preservando o fluxo atual sem criar novas rotas.
+- Exibição de versão na experiência pública para reforçar rastreabilidade de release.

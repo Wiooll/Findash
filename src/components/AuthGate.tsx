@@ -1,5 +1,7 @@
-import { useState, type ReactNode } from 'react';
+﻿import { useState, type ReactNode } from 'react';
+import { ArrowRight, CheckCircle2, FileSpreadsheet, ShieldCheck, Target, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { APP_NAME, APP_VERSION } from '../constants/app';
 
 const mapAuthError = (error: unknown) => {
   if (!(error instanceof Error)) return 'Não foi possível concluir a autenticação.';
@@ -24,6 +26,45 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
   const { user, loading, signInWithGoogle } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const ctaLabel = submitting ? 'Conectando...' : 'Entrar com Google';
+
+  const beneficios = [
+    {
+      title: 'Visão geral em tempo real',
+      description: 'Acompanhe saldo, receitas, despesas e economia mensal em um único painel.',
+      icon: TrendingUp,
+    },
+    {
+      title: 'Metas com acompanhamento',
+      description: 'Defina objetivos mensais e receba sinais claros de risco antes de estourar o orçamento.',
+      icon: Target,
+    },
+    {
+      title: 'Dados protegidos por usuário',
+      description: 'Autenticação com Google e isolamento por conta para cada usuário autenticado.',
+      icon: ShieldCheck,
+    },
+    {
+      title: 'Importação e exportação',
+      description: 'Importe transações por CSV e exporte relatórios em CSV, Excel e PDF.',
+      icon: FileSpreadsheet,
+    },
+  ];
+
+  const perguntasFrequentes = [
+    {
+      question: 'Preciso pagar para usar?',
+      answer: 'Não. Atualmente o FinDash está disponível sem custos para uso pessoal.',
+    },
+    {
+      question: 'Meus dados ficam separados por usuário?',
+      answer: 'Sim. Cada conta acessa somente os próprios dados após autenticação com Google.',
+    },
+    {
+      question: 'Funciona no celular?',
+      answer: 'Sim. O layout foi pensado para desktop e mobile com navegação adaptada.',
+    },
+  ];
 
   if (loading) {
     return (
@@ -48,34 +89,170 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-card border border-border rounded-xl shadow-sm p-6 space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Entrar no FinDash</h1>
-          <p className="text-sm text-muted-foreground">
-            Use sua conta Google para acessar o dashboard com dados isolados por usuário.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 -left-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-20 h-80 w-80 rounded-full bg-info/10 blur-3xl" />
+      </div>
 
-        <div className="space-y-3">
-          {error && (
-            <div className="text-sm px-3 py-2 rounded-md border border-danger/40 bg-danger/10 text-danger">
-              {error}
+      <div className="relative mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-16 space-y-14">
+        <header className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-9 w-9 rounded-lg bg-primary text-primary-foreground grid place-items-center font-bold">
+              F
             </div>
-          )}
+            <div>
+              <p className="font-semibold leading-tight">{APP_NAME}</p>
+              <p className="text-xs text-muted-foreground">Controle financeiro pessoal</p>
+            </div>
+          </div>
+          <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+            Versão {APP_VERSION}
+          </span>
+        </header>
 
-          <button
-            type="button"
-            onClick={() => void handleGoogleSignIn()}
-            disabled={submitting}
-            className="w-full bg-background border border-input text-foreground hover:bg-secondary disabled:opacity-70 disabled:cursor-not-allowed px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2"
-          >
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-black text-xs font-bold">
-              G
+        <section className="grid gap-8 md:grid-cols-2 md:items-center">
+          <div className="space-y-5">
+            <span className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium">
+              Organize seus gastos com clareza
             </span>
-            {submitting ? 'Conectando...' : 'Entrar com Google'}
-          </button>
-        </div>
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+              Controle seus gastos com metas, alertas e visão de futuro.
+            </h1>
+            <p className="text-muted-foreground text-base md:text-lg">
+              O {APP_NAME} centraliza transações, contas, cartões e insights para você decidir melhor hoje e
+              no fim do mês.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() => void handleGoogleSignIn()}
+                disabled={submitting}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity"
+              >
+                {ctaLabel}
+                <ArrowRight size={16} />
+              </button>
+              <a
+                href="#recursos"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-secondary transition-colors"
+              >
+                Ver recursos
+              </a>
+            </div>
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-success" />
+                Login com Google
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-success" />
+                Dados isolados por usuário
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl shadow-sm p-6 space-y-4">
+            <p className="text-sm text-muted-foreground">Resumo de um usuário no mês</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border p-4">
+                <p className="text-xs text-muted-foreground">Receitas</p>
+                <p className="text-lg font-semibold text-success">R$ 8.420,00</p>
+              </div>
+              <div className="rounded-xl border border-border p-4">
+                <p className="text-xs text-muted-foreground">Despesas</p>
+                <p className="text-lg font-semibold text-danger">R$ 5.210,00</p>
+              </div>
+              <div className="rounded-xl border border-border p-4 col-span-2">
+                <p className="text-xs text-muted-foreground">Economia projetada</p>
+                <p className="text-lg font-semibold text-primary">R$ 3.210,00</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Exemplo ilustrativo de como seus dados aparecem no dashboard.
+            </p>
+          </div>
+        </section>
+
+        <section id="recursos" className="space-y-4">
+          <h2 className="text-2xl font-bold tracking-tight">Recursos principais</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {beneficios.map((beneficio) => {
+              const Icon = beneficio.icon;
+              return (
+                <article key={beneficio.title} className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                  <Icon size={18} className="text-primary mb-3" />
+                  <h3 className="font-semibold">{beneficio.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{beneficio.description}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold tracking-tight">Como funciona</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <article className="rounded-xl border border-border bg-card p-5">
+              <p className="text-xs text-primary font-semibold">Passo 1</p>
+              <h3 className="mt-1 font-semibold">Conecte sua conta</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Entre com Google para habilitar seu ambiente.</p>
+            </article>
+            <article className="rounded-xl border border-border bg-card p-5">
+              <p className="text-xs text-primary font-semibold">Passo 2</p>
+              <h3 className="mt-1 font-semibold">Registre ou importe</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Adicione transações manualmente ou por CSV.</p>
+            </article>
+            <article className="rounded-xl border border-border bg-card p-5">
+              <p className="text-xs text-primary font-semibold">Passo 3</p>
+              <h3 className="mt-1 font-semibold">Acompanhe os insights</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Use metas e alertas para agir antes dos excessos.</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold tracking-tight">Perguntas frequentes</h2>
+          <div className="space-y-3">
+            {perguntasFrequentes.map((item) => (
+              <details key={item.question} className="rounded-xl border border-border bg-card p-4 group">
+                <summary className="cursor-pointer list-none font-medium flex items-center justify-between">
+                  {item.question}
+                  <span className="text-muted-foreground text-xs group-open:hidden">Abrir</span>
+                  <span className="text-muted-foreground text-xs hidden group-open:inline">Fechar</span>
+                </summary>
+                <p className="mt-2 text-sm text-muted-foreground">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-3 text-center">
+          <h2 className="text-2xl font-bold tracking-tight">Pronto para organizar sua vida financeira?</h2>
+          <p className="text-muted-foreground">
+            Entre agora e acompanhe sua evolução com dados claros, metas e alertas inteligentes.
+          </p>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => void handleGoogleSignIn()}
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity"
+            >
+              {ctaLabel}
+            </button>
+          </div>
+        </section>
+
+        {error && (
+          <div className="text-sm px-3 py-2 rounded-md border border-danger/40 bg-danger/10 text-danger max-w-2xl mx-auto">
+            {error}
+          </div>
+        )}
+
+        <footer className="text-center text-xs text-muted-foreground">
+          {APP_NAME} v{APP_VERSION} • Dados sincronizados com Firebase
+        </footer>
       </div>
     </div>
   );
