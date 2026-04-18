@@ -1,7 +1,45 @@
-﻿import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ArrowRight, CheckCircle2, FileSpreadsheet, ShieldCheck, Target, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { APP_NAME, APP_VERSION } from '../constants/app';
+
+const BENEFICIOS = [
+  {
+    title: 'Visão geral em tempo real',
+    description: 'Acompanhe saldo, receitas, despesas e economia mensal em um único painel.',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Metas com acompanhamento',
+    description: 'Defina objetivos mensais e receba sinais claros de risco antes de estourar o orçamento.',
+    icon: Target,
+  },
+  {
+    title: 'Dados protegidos por usuário',
+    description: 'Autenticação com Google e isolamento por conta para cada usuário autenticado.',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Importação e exportação',
+    description: 'Importe transações por CSV e exporte relatórios em CSV, Excel e PDF.',
+    icon: FileSpreadsheet,
+  },
+];
+
+const PERGUNTAS_FREQUENTES = [
+  {
+    question: 'Preciso pagar para usar?',
+    answer: 'Não. Atualmente o FinDash está disponível sem custos para uso pessoal.',
+  },
+  {
+    question: 'Meus dados ficam separados por usuário?',
+    answer: 'Sim. Cada conta acessa somente os próprios dados após autenticação com Google.',
+  },
+  {
+    question: 'Funciona no celular?',
+    answer: 'Sim. O layout foi pensado para desktop e mobile com navegação adaptada.',
+  },
+];
 
 const mapAuthError = (error: unknown) => {
   if (!(error instanceof Error)) return 'Não foi possível concluir a autenticação.';
@@ -26,49 +64,17 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
   const { user, loading, signInWithGoogle } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const ctaLabel = submitting ? 'Conectando...' : 'Entrar com Google';
-
-  const beneficios = [
-    {
-      title: 'Visão geral em tempo real',
-      description: 'Acompanhe saldo, receitas, despesas e economia mensal em um único painel.',
-      icon: TrendingUp,
-    },
-    {
-      title: 'Metas com acompanhamento',
-      description: 'Defina objetivos mensais e receba sinais claros de risco antes de estourar o orçamento.',
-      icon: Target,
-    },
-    {
-      title: 'Dados protegidos por usuário',
-      description: 'Autenticação com Google e isolamento por conta para cada usuário autenticado.',
-      icon: ShieldCheck,
-    },
-    {
-      title: 'Importação e exportação',
-      description: 'Importe transações por CSV e exporte relatórios em CSV, Excel e PDF.',
-      icon: FileSpreadsheet,
-    },
-  ];
-
-  const perguntasFrequentes = [
-    {
-      question: 'Preciso pagar para usar?',
-      answer: 'Não. Atualmente o FinDash está disponível sem custos para uso pessoal.',
-    },
-    {
-      question: 'Meus dados ficam separados por usuário?',
-      answer: 'Sim. Cada conta acessa somente os próprios dados após autenticação com Google.',
-    },
-    {
-      question: 'Funciona no celular?',
-      answer: 'Sim. O layout foi pensado para desktop e mobile com navegação adaptada.',
-    },
-  ];
+  const ctaLabelHero = submitting ? 'Conectando...' : 'Entrar e começar agora';
+  const ctaLabelFinal = submitting ? 'Conectando...' : 'Criar minha conta gratuita';
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+      <div
+        className="min-h-screen flex items-center justify-center bg-background text-foreground"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
         <p className="text-sm text-muted-foreground">Validando sessão...</p>
       </div>
     );
@@ -89,14 +95,14 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden" aria-busy={submitting}>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -left-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute top-1/3 -right-20 h-80 w-80 rounded-full bg-info/10 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-16 space-y-14">
-        <header className="flex items-center justify-between">
+      <main className="relative container mx-auto px-4 py-10 md:px-6 md:py-16 space-y-14">
+        <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-lg bg-primary text-primary-foreground grid place-items-center font-bold">
               F
@@ -113,7 +119,7 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
 
         <section className="grid gap-8 md:grid-cols-2 md:items-center">
           <div className="space-y-5">
-            <span className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium">
+            <span className="inline-flex items-center rounded-full bg-primary/10 text-foreground px-3 py-1 text-xs font-medium">
               Organize seus gastos com clareza
             </span>
             <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
@@ -128,14 +134,15 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
                 type="button"
                 onClick={() => void handleGoogleSignIn()}
                 disabled={submitting}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity"
+                aria-label="Entrar e começar agora com Google"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                {ctaLabel}
+                {ctaLabelHero}
                 <ArrowRight size={16} />
               </button>
               <a
                 href="#recursos"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-secondary transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 Ver recursos
               </a>
@@ -177,7 +184,7 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
         <section id="recursos" className="space-y-4">
           <h2 className="text-2xl font-bold tracking-tight">Recursos principais</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {beneficios.map((beneficio) => {
+            {BENEFICIOS.map((beneficio) => {
               const Icon = beneficio.icon;
               return (
                 <article key={beneficio.title} className="rounded-xl border border-border bg-card p-5 shadow-sm">
@@ -194,17 +201,17 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
           <h2 className="text-2xl font-bold tracking-tight">Como funciona</h2>
           <div className="grid gap-4 md:grid-cols-3">
             <article className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs text-primary font-semibold">Passo 1</p>
+              <p className="text-xs text-foreground font-semibold">Passo 1</p>
               <h3 className="mt-1 font-semibold">Conecte sua conta</h3>
               <p className="mt-1 text-sm text-muted-foreground">Entre com Google para habilitar seu ambiente.</p>
             </article>
             <article className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs text-primary font-semibold">Passo 2</p>
+              <p className="text-xs text-foreground font-semibold">Passo 2</p>
               <h3 className="mt-1 font-semibold">Registre ou importe</h3>
               <p className="mt-1 text-sm text-muted-foreground">Adicione transações manualmente ou por CSV.</p>
             </article>
             <article className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs text-primary font-semibold">Passo 3</p>
+              <p className="text-xs text-foreground font-semibold">Passo 3</p>
               <h3 className="mt-1 font-semibold">Acompanhe os insights</h3>
               <p className="mt-1 text-sm text-muted-foreground">Use metas e alertas para agir antes dos excessos.</p>
             </article>
@@ -214,9 +221,9 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
         <section className="space-y-4">
           <h2 className="text-2xl font-bold tracking-tight">Perguntas frequentes</h2>
           <div className="space-y-3">
-            {perguntasFrequentes.map((item) => (
+            {PERGUNTAS_FREQUENTES.map((item) => (
               <details key={item.question} className="rounded-xl border border-border bg-card p-4 group">
-                <summary className="cursor-pointer list-none font-medium flex items-center justify-between">
+                <summary className="cursor-pointer list-none font-medium flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md">
                   {item.question}
                   <span className="text-muted-foreground text-xs group-open:hidden">Abrir</span>
                   <span className="text-muted-foreground text-xs hidden group-open:inline">Fechar</span>
@@ -237,15 +244,20 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
               type="button"
               onClick={() => void handleGoogleSignIn()}
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity"
+              aria-label="Criar minha conta gratuita com Google"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              {ctaLabel}
+              {ctaLabelFinal}
             </button>
           </div>
         </section>
 
         {error && (
-          <div className="text-sm px-3 py-2 rounded-md border border-danger/40 bg-danger/10 text-danger max-w-2xl mx-auto">
+          <div
+            className="text-sm px-3 py-2 rounded-md border border-danger/40 bg-danger/10 text-danger max-w-2xl mx-auto"
+            role="alert"
+            aria-live="assertive"
+          >
             {error}
           </div>
         )}
@@ -253,7 +265,7 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
         <footer className="text-center text-xs text-muted-foreground">
           {APP_NAME} v{APP_VERSION} • Dados sincronizados com Firebase
         </footer>
-      </div>
+      </main>
     </div>
   );
 };
