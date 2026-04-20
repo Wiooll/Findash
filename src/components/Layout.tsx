@@ -16,6 +16,7 @@ import { useFinance } from '../context/FinanceContext';
 import { useAuth } from '../context/AuthContext';
 import { APP_NAME, APP_VERSION } from '../constants/app';
 import { cn } from '../utils/lib';
+import { MobileBottomNav } from './MobileBottomNav';
 
 interface LayoutProps {
   children: ReactNode;
@@ -104,24 +105,11 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
         </button>
       </div>
 
-      <div className="md:hidden flex overflow-x-auto bg-card border-b border-border no-scrollbar sticky top-[60px] z-10">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={cn(
-              'flex-shrink-0 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all border-b-2',
-              activeTab === item.id
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground',
-            )}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
 
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full max-w-[1600px] mx-auto">
+
+      <MobileBottomNav items={menuItems} activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <main className="flex-1 p-4 pb-28 md:p-8 md:pb-8 overflow-y-auto w-full max-w-[1600px] mx-auto min-h-[calc(100dvh-60px)]">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">{children}</div>
       </main>
     </div>

@@ -135,14 +135,14 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
                 onClick={() => void handleGoogleSignIn()}
                 disabled={submitting}
                 aria-label="Entrar e começar agora com Google"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground px-6 py-4 text-base font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {ctaLabelHero}
                 <ArrowRight size={16} />
               </button>
               <a
                 href="#recursos"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-input bg-background px-6 py-4 text-base font-medium hover:bg-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 Ver recursos
               </a>
@@ -159,18 +159,18 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-6 space-y-4">
+          <div className="bg-card border border-border rounded-3xl shadow-sm p-6 space-y-4">
             <p className="text-sm text-muted-foreground">Resumo de um usuário no mês</p>
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-border p-4">
+              <div className="rounded-2xl border border-border p-4">
                 <p className="text-xs text-muted-foreground">Receitas</p>
                 <p className="text-lg font-semibold text-success">R$ 8.420,00</p>
               </div>
-              <div className="rounded-xl border border-border p-4">
+              <div className="rounded-2xl border border-border p-4">
                 <p className="text-xs text-muted-foreground">Despesas</p>
                 <p className="text-lg font-semibold text-danger">R$ 5.210,00</p>
               </div>
-              <div className="rounded-xl border border-border p-4 col-span-2">
+              <div className="rounded-2xl border border-border p-4 col-span-2">
                 <p className="text-xs text-muted-foreground">Economia projetada</p>
                 <p className="text-lg font-semibold text-primary">R$ 3.210,00</p>
               </div>
@@ -187,10 +187,10 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
             {BENEFICIOS.map((beneficio) => {
               const Icon = beneficio.icon;
               return (
-                <article key={beneficio.title} className="rounded-xl border border-border bg-card p-5 shadow-sm">
-                  <Icon size={18} className="text-primary mb-3" />
-                  <h3 className="font-semibold">{beneficio.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{beneficio.description}</p>
+                <article key={beneficio.title} className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+                  <Icon size={24} className="text-primary mb-3" />
+                  <h3 className="font-semibold text-lg">{beneficio.title}</h3>
+                  <p className="mt-1 text-base text-muted-foreground">{beneficio.description}</p>
                 </article>
               );
             })}
@@ -200,20 +200,20 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
         <section className="space-y-4">
           <h2 className="text-2xl font-bold tracking-tight">Como funciona</h2>
           <div className="grid gap-4 md:grid-cols-3">
-            <article className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs text-foreground font-semibold">Passo 1</p>
-              <h3 className="mt-1 font-semibold">Conecte sua conta</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Entre com Google para habilitar seu ambiente.</p>
+            <article className="rounded-3xl border border-border bg-card p-6">
+              <p className="text-sm text-foreground font-semibold">Passo 1</p>
+              <h3 className="mt-1 font-semibold text-lg">Conecte sua conta</h3>
+              <p className="mt-1 text-base text-muted-foreground">Entre com Google para habilitar seu ambiente.</p>
             </article>
-            <article className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs text-foreground font-semibold">Passo 2</p>
-              <h3 className="mt-1 font-semibold">Registre ou importe</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Adicione transações manualmente ou por CSV.</p>
+            <article className="rounded-3xl border border-border bg-card p-6">
+              <p className="text-sm text-foreground font-semibold">Passo 2</p>
+              <h3 className="mt-1 font-semibold text-lg">Registre ou importe</h3>
+              <p className="mt-1 text-base text-muted-foreground">Adicione transações manualmente ou por CSV.</p>
             </article>
-            <article className="rounded-xl border border-border bg-card p-5">
-              <p className="text-xs text-foreground font-semibold">Passo 3</p>
-              <h3 className="mt-1 font-semibold">Acompanhe os insights</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Use metas e alertas para agir antes dos excessos.</p>
+            <article className="rounded-3xl border border-border bg-card p-6">
+              <p className="text-sm text-foreground font-semibold">Passo 3</p>
+              <h3 className="mt-1 font-semibold text-lg">Acompanhe os insights</h3>
+              <p className="mt-1 text-base text-muted-foreground">Use metas e alertas para agir antes dos excessos.</p>
             </article>
           </div>
         </section>
@@ -234,18 +234,18 @@ export const AuthGate = ({ children }: { children: ReactNode }) => {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-3 text-center">
+        <section className="rounded-3xl border border-border bg-card p-8 md:p-12 shadow-sm space-y-4 text-center">
           <h2 className="text-2xl font-bold tracking-tight">Pronto para organizar sua vida financeira?</h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Entre agora e acompanhe sua evolução com dados claros, metas e alertas inteligentes.
           </p>
-          <div className="flex justify-center">
+          <div className="flex justify-center pt-4">
             <button
               type="button"
               onClick={() => void handleGoogleSignIn()}
               disabled={submitting}
               aria-label="Criar minha conta gratuita com Google"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground px-8 py-4 text-base font-medium hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {ctaLabelFinal}
             </button>
