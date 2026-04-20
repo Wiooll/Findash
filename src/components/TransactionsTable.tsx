@@ -14,6 +14,7 @@ import {
   Download,
   FileSpreadsheet,
   FileText,
+  Camera,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import {
@@ -23,6 +24,10 @@ import {
   parseTransactionsCsv,
   type ExportMode,
 } from '../utils/transactionImportExport';
+import {
+  suggestExpenseFromReceiptPhoto,
+  validateReceiptPhotoFile,
+} from '../utils/receiptPhoto';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['Dinheiro', 'Cartão de crédito', 'Débito', 'PIX'];
 
@@ -107,8 +112,10 @@ export const TransactionsTable = () => {
   const [addForm, setAddForm] = useState(emptyAddForm(categories));
   const [formError, setFormError] = useState('');
   const [importFeedback, setImportFeedback] = useState('');
+  const [receiptFeedback, setReceiptFeedback] = useState('');
   const [exportMode, setExportMode] = useState<ExportMode>('detalhado');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const receiptInputRef = useRef<HTMLInputElement>(null);
 
   const mesesOptions = useMemo(() => {
     const meses = new Set<string>();
@@ -248,6 +255,47 @@ export const TransactionsTable = () => {
     event.target.value = '';
   };
 
+  const handleReceiptPhotoUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setFormError('');
+    setReceiptFeedback('');
+
+    const validationError = validateReceiptPhotoFile(file);
+    if (validationError) {
+      setFormError(validationError);
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      const suggestion = await suggestExpenseFromReceiptPhoto(file);
+      setIsAdding(true);
+      setAddForm({
+        ...emptyAddForm(categories),
+        tipo: 'despesa',
+        formaPagamento: 'PIX',
+        descricao: suggestion.descricao,
+        categoria: categories.length > 0 ? categories[0].nome : '',
+        valor: suggestion.valor,
+        data: suggestion.data,
+      });
+      setReceiptFeedback(
+        'Sugestão aplicada a partir da foto. Revise os campos antes de salvar a transação.',
+      );
+    } catch (error) {
+      console.error('Falha ao processar nota fiscal por foto', error);
+      setIsAdding(true);
+      setAddForm(emptyAddForm(categories));
+      setFormError(
+        'Não foi possível extrair os dados da nota fiscal. Preencha manualmente e tente novamente.',
+      );
+    } finally {
+      event.target.value = '';
+    }
+  };
+
   const handleExport = (formatType: 'csv' | 'excel' | 'pdf') => {
     const baseFileName = getExportFileBase(exportMode);
 
@@ -288,11 +336,24 @@ export const TransactionsTable = () => {
             className="hidden"
             onChange={(event) => void handleImportCsv(event)}
           />
+          <input
+            ref={receiptInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            onChange={(event) => void handleReceiptPhotoUpload(event)}
+          />
           <button
             onClick={() => fileInputRef.current?.click()}
             className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors"
           >
             <Upload size={15} /> Importar CSV
+          </button>
+          <button
+            onClick={() => receiptInputRef.current?.click()}
+            className="px-3 py-2 rounded-lg border border-border bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors"
+          >
+            <Camera size={15} /> Nota por foto
           </button>
           <select
             value={exportMode}
@@ -325,6 +386,7 @@ export const TransactionsTable = () => {
               setIsAdding(true);
               setAddForm(emptyAddForm(categories));
               setFormError('');
+              setReceiptFeedback('');
             }}
             className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
           >
@@ -336,6 +398,12 @@ export const TransactionsTable = () => {
       {importFeedback && (
         <div className="px-4 py-3 rounded-lg border border-primary/30 bg-primary/10 text-sm text-foreground">
           {importFeedback}
+        </div>
+      )}
+
+      {receiptFeedback && (
+        <div className="px-4 py-3 rounded-lg border border-success/30 bg-success/10 text-sm text-foreground">
+          {receiptFeedback}
         </div>
       )}
 

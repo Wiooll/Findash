@@ -9,8 +9,11 @@ import type {
   Conta,
   FaturaInfo,
   FaturaStatus,
+  Loan,
+  LoanStatus,
   RecurrenceFrequency,
   RecurringTransaction,
+  ThemeMode,
   Transaction,
 } from '../types';
 import {
@@ -48,6 +51,7 @@ interface FinanceContextType {
   contas: Conta[];
   cartoesCredito: CartaoCredito[];
   faturaStatuses: FaturaStatus[];
+  loans: Loan[];
 
   // CRUD Transações
   addTransaction: (t: Omit<Transaction, 'id'>) => Promise<void>;
@@ -86,7 +90,7 @@ interface FinanceContextType {
 
   // CRUD Config
   updateConfig: (c: Partial<AppConfig>) => Promise<void>;
-  toggleDarkMode: () => void;
+  setThemeMode: (themeMode: ThemeMode) => Promise<void>;
 
   // Sprint 2: CRUD Contas
   addConta: (c: Omit<Conta, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
@@ -97,6 +101,12 @@ interface FinanceContextType {
   addCartaoCredito: (c: Omit<CartaoCredito, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateCartaoCredito: (id: string, c: Partial<CartaoCredito>) => Promise<void>;
   deleteCartaoCredito: (id: string) => Promise<void>;
+
+  // Loans
+  addLoan: (loan: Omit<Loan, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  updateLoan: (id: string, loan: Partial<Loan>) => Promise<void>;
+  deleteLoan: (id: string) => Promise<void>;
+  updateLoanStatus: (id: string, status: LoanStatus) => Promise<void>;
 
   // Sprint 2: Operações de fatura
   pagarFatura: (cartaoId: string, anoMes: string) => Promise<void>;
@@ -173,12 +183,24 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const [categories, setCategories] = useState<Categoria[]>(defaultCategories);
   const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
   const [categoryBudgets, setCategoryBudgets] = useState<CategoryBudget[]>([]);
-  const [config, setConfig] = useState<AppConfig>({ metaEconomiaMensal: 1000, isDarkMode: false });
+  const [config, setConfig] = useState<AppConfig>({
+    metaEconomiaMensal: 1000,
+    isDarkMode: false,
+    themeMode: 'white',
+  });
   // Sprint 2
   const [contas, setContas] = useState<Conta[]>([]);
   const [cartoesCredito, setCartoesCredito] = useState<CartaoCredito[]>([]);
   const [faturaStatuses, setFaturaStatuses] = useState<FaturaStatus[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
   const userId = user?.uid || null;
+
+  const applyTheme = useCallback((themeMode: ThemeMode) => {
+    const root = document.documentElement;
+    const isDark = themeMode === 'black';
+    root.classList.toggle('dark', isDark);
+    root.dataset.theme = themeMode;
+  }, []);
 
   const getUserCollection = useCallback(<T,>(collectionName: string): CollectionReference<T> => {
     if (!userId) {
@@ -268,30 +290,33 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!userId) {
-      setConfig({ metaEconomiaMensal: 1000, isDarkMode: false });
-      document.documentElement.classList.remove('dark');
+      setConfig({ metaEconomiaMensal: 1000, isDarkMode: false, themeMode: 'white' });
+      applyTheme('white');
       return;
     }
 
     const unsubscribe = onSnapshot(getUserDoc('config', 'main'), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data() as AppConfig;
-        setConfig(data);
-        if (data.isDarkMode) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        const normalizedTheme: ThemeMode =
+          data.themeMode || (data.isDarkMode ? 'black' : 'white');
+        setConfig({
+          ...data,
+          themeMode: normalizedTheme,
+          isDarkMode: normalizedTheme === 'black',
+        });
+        applyTheme(normalizedTheme);
       } else {
         void setDoc(getUserDoc('config', 'main'), {
           metaEconomiaMensal: 1000,
           isDarkMode: false,
+          themeMode: 'white',
           userId,
         });
       }
     });
     return () => unsubscribe();
-  }, [getUserCollection, userId]);
+  }, [applyTheme, getUserDoc, userId]);
 
   // Sprint 2: Sync Contas
   useEffect(() => {
@@ -336,7 +361,21 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       setFaturaStatuses(data);
     });
     return () => unsubscribe();
-  }, [userId]);
+  }, [getUserCollection, userId]);
+
+  useEffect(() => {
+    if (!userId) {
+      setLoans([]);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(getUserCollection<Loan>('loans'), (snapshot) => {
+      const data: Loan[] = [];
+      snapshot.forEach((docSnap) => data.push(docSnap.data() as Loan));
+      setLoans(data);
+    });
+    return () => unsubscribe();
+  }, [getUserCollection, userId]);
 
   // ── Geração de recorrências ──────────────────────────────────────────────────
 
@@ -677,8 +716,11 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     await setDoc(getUserDoc('config', 'main'), { ...c, userId: ownerId }, { merge: true });
   };
 
-  const toggleDarkMode = () => {
-    updateConfig({ isDarkMode: !config.isDarkMode });
+  const setThemeMode = async (themeMode: ThemeMode) => {
+    await updateConfig({
+      themeMode,
+      isDarkMode: themeMode === 'black',
+    });
   };
 
   // ── CRUD Contas ──────────────────────────────────────────────────────────────
@@ -719,6 +761,34 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const deleteCartaoCredito = async (id: string) => {
     ensureUserId();
     await deleteDoc(getUserDoc('cartoesCredito', id));
+  };
+
+  const addLoan = async (loan: Omit<Loan, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const ownerId = ensureUserId();
+    const newId = uuid();
+    const now = new Date().toISOString();
+    const payload: Loan = {
+      ...loan,
+      id: newId,
+      userId: ownerId,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await setDoc(getUserDoc('loans', newId), payload);
+  };
+
+  const updateLoan = async (id: string, loan: Partial<Loan>) => {
+    ensureUserId();
+    await updateDoc(getUserDoc('loans', id), { ...loan, updatedAt: new Date().toISOString() });
+  };
+
+  const deleteLoan = async (id: string) => {
+    ensureUserId();
+    await deleteDoc(getUserDoc('loans', id));
+  };
+
+  const updateLoanStatus = async (id: string, status: LoanStatus) => {
+    await updateLoan(id, { status });
   };
 
   // ── Operações de Fatura ──────────────────────────────────────────────────────
@@ -776,6 +846,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
         contas,
         cartoesCredito,
         faturaStatuses,
+        loans,
         addTransaction,
         updateTransaction,
         deleteTransaction,
@@ -791,13 +862,17 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
         upsertCategoryBudget,
         deleteCategoryBudget,
         updateConfig,
-        toggleDarkMode,
+        setThemeMode,
         addConta,
         updateConta,
         deleteConta,
         addCartaoCredito,
         updateCartaoCredito,
         deleteCartaoCredito,
+        addLoan,
+        updateLoan,
+        deleteLoan,
+        updateLoanStatus,
         pagarFatura,
         getSaldoConta,
         getFaturasInfo,

@@ -11,6 +11,7 @@ import { RecurringTransactions } from './components/RecurringTransactions';
 import { Accounts } from './components/Accounts';
 import { CreditCards } from './components/CreditCards';
 import { Insights } from './components/Insights';
+import { Loans } from './components/Loans';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,6 +20,7 @@ function AppContent() {
     <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
       {activeTab === 'dashboard' && <Dashboard />}
       {activeTab === 'transactions' && <TransactionsTable />}
+      {activeTab === 'loans' && <Loans />}
       {activeTab === 'accounts' && <Accounts />}
       {activeTab === 'credit-cards' && <CreditCards />}
       {activeTab === 'insights' && <Insights />}

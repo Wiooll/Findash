@@ -136,3 +136,17 @@ npm run dev
 - InclusÃ£o de `main` como landmark principal e reforÃ§o de foco visÃ­vel para navegaÃ§Ã£o por teclado.
 - Ajustes de responsividade no cabeÃ§alho e refinamento da copy dos CTAs para reduzir ambiguidade de aÃ§Ã£o.
 - OtimizaÃ§Ã£o leve: dados estÃ¡ticos de benefÃ­cios e FAQ movidos para fora do componente.
+
+## Sprint 4.3.0 - EmprÃ©stimos, Nota por Foto e Tema Cinza
+
+- Nova aba **EmprÃ©stimos** com cadastro, listagem, validaÃ§Ã£o de campos e atualizaÃ§Ã£o de status.
+- Novo fluxo **Nota por foto** na tela de transaÃ§Ãµes com:
+  - validaÃ§Ã£o de formato (JPEG/PNG/WEBP) e limite de 5MB;
+  - sugestÃ£o inicial de campos para despesa;
+  - revisÃ£o obrigatÃ³ria antes de salvar.
+- Sistema de tema atualizado para **3 opÃ§Ãµes**: Branco, Preto e Cinza.
+- InclusÃ£o de **rodapÃ© global** com direitos autorais e ano dinÃ¢mico.
+- Novos testes para:
+  - validaÃ§Ã£o e sugestÃ£o de nota por foto;
+  - regras de tema e texto de direitos autorais;
+  - validaÃ§Ã£o e CRUD de emprÃ©stimos.

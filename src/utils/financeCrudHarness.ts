@@ -1,18 +1,21 @@
-import type { Categoria, Transaction } from '../types';
+import type { Categoria, Loan, LoanStatus, Transaction } from '../types';
 
 interface StoreData {
   categories: Map<string, Categoria[]>;
   transactions: Map<string, Transaction[]>;
+  loans: Map<string, Loan[]>;
 }
 
 export const createFinanceCrudHarness = () => {
   const store: StoreData = {
     categories: new Map(),
     transactions: new Map(),
+    loans: new Map(),
   };
 
   const getUserCategories = (userId: string) => store.categories.get(userId) || [];
   const getUserTransactions = (userId: string) => store.transactions.get(userId) || [];
+  const getUserLoans = (userId: string) => store.loans.get(userId) || [];
 
   const upsertCategories = (userId: string, categories: Categoria[]) => {
     store.categories.set(userId, categories);
@@ -20,6 +23,10 @@ export const createFinanceCrudHarness = () => {
 
   const upsertTransactions = (userId: string, transactions: Transaction[]) => {
     store.transactions.set(userId, transactions);
+  };
+
+  const upsertLoans = (userId: string, loans: Loan[]) => {
+    store.loans.set(userId, loans);
   };
 
   const createCategory = (userId: string, category: Categoria) => {
@@ -69,6 +76,27 @@ export const createFinanceCrudHarness = () => {
     upsertTransactions(userId, next);
   };
 
+  const createLoan = (userId: string, loan: Loan) => {
+    const loans = getUserLoans(userId);
+    upsertLoans(userId, [...loans, { ...loan, userId }]);
+  };
+
+  const updateLoan = (userId: string, loanId: string, patch: Partial<Loan>) => {
+    const next = getUserLoans(userId).map((loan) =>
+      loan.id === loanId ? { ...loan, ...patch, userId } : loan,
+    );
+    upsertLoans(userId, next);
+  };
+
+  const updateLoanStatus = (userId: string, loanId: string, status: LoanStatus) => {
+    updateLoan(userId, loanId, { status });
+  };
+
+  const deleteLoan = (userId: string, loanId: string) => {
+    const next = getUserLoans(userId).filter((loan) => loan.id !== loanId);
+    upsertLoans(userId, next);
+  };
+
   return {
     createCategory,
     updateCategory,
@@ -76,8 +104,13 @@ export const createFinanceCrudHarness = () => {
     createTransaction,
     updateTransaction,
     deleteTransaction,
+    createLoan,
+    updateLoan,
+    updateLoanStatus,
+    deleteLoan,
     getUserCategories,
     getUserTransactions,
+    getUserLoans,
   };
 };
 

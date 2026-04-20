@@ -2,6 +2,9 @@ export type TransactionType = 'receita' | 'despesa' | 'transferencia';
 export type PaymentMethod = 'Dinheiro' | 'Cartão de crédito' | 'Débito' | 'PIX';
 export type RecurrenceFrequency = 'diaria' | 'semanal' | 'mensal' | 'anual';
 export type TipoConta = 'corrente' | 'poupanca' | 'dinheiro' | 'investimento';
+export type LoanType = 'emprestado' | 'recebido';
+export type LoanStatus = 'em_aberto' | 'quitado' | 'atrasado';
+export type ThemeMode = 'white' | 'black' | 'gray';
 
 export interface Transaction {
   id: string;
@@ -59,6 +62,7 @@ export interface CategoryBudget {
 export interface AppConfig {
   metaEconomiaMensal: number;
   isDarkMode: boolean;
+  themeMode?: ThemeMode;
 }
 
 // Sprint 2: Conta/Carteira
@@ -84,6 +88,18 @@ export interface CartaoCredito {
   diaVencimento: number;   // 1-28
   cor: string;
   contaDebitoId: string;   // conta que paga a fatura
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Loan {
+  id: string;
+  userId?: string;
+  descricao: string;
+  valor: number;
+  tipo: LoanType;
+  data: string; // YYYY-MM-DD
+  status: LoanStatus;
   createdAt: string;
   updatedAt: string;
 }
