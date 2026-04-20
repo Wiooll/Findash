@@ -34,14 +34,20 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
   const currentTheme = config.themeMode || (config.isDarkMode ? 'black' : 'white');
   const currentYear = new Date().getFullYear();
   const copyrightText = buildCopyrightText(APP_NAME, currentYear);
-  const handleThemeChange = (value: string) => {
-    void setThemeMode(value as ThemeMode);
+  const toggleTheme = () => {
+    const modes: ThemeMode[] = ['white', 'black', 'gray'];
+    const currentIndex = modes.indexOf(currentTheme as ThemeMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    void setThemeMode(modes[nextIndex]);
   };
-  const themeButtons: Array<{ value: ThemeMode; label: string; icon: typeof Sun }> = [
-    { value: 'white', label: 'Tema branco', icon: Sun },
-    { value: 'black', label: 'Tema preto', icon: Moon },
-    { value: 'gray', label: 'Tema cinza', icon: Circle },
-  ];
+
+  const getThemeIcon = () => {
+    switch (currentTheme) {
+      case 'black': return <Moon size={16} />;
+      case 'gray': return <Circle size={16} />;
+      default: return <Sun size={16} />;
+    }
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -97,29 +103,13 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
           </div>
           <div className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-muted-foreground gap-2">
             <span className="text-sm font-medium">Tema</span>
-            <div className="flex items-center gap-1 rounded-lg border border-input bg-background p-1">
-              {themeButtons.map((item) => {
-                const Icon = item.icon;
-                const active = currentTheme === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => handleThemeChange(item.value)}
-                    aria-label={item.label}
-                    aria-pressed={active}
-                    className={cn(
-                      'h-8 w-8 inline-flex items-center justify-center rounded-md transition-colors',
-                      active
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
-                    )}
-                  >
-                    <Icon size={15} />
-                  </button>
-                );
-              })}
-            </div>
+            <button
+              onClick={toggleTheme}
+              className="h-9 w-9 flex items-center justify-center rounded-lg border border-input bg-background hover:bg-secondary transition-colors"
+              title="Alternar tema"
+            >
+              {getThemeIcon()}
+            </button>
           </div>
           <button
             onClick={() => void logout()}
@@ -135,29 +125,13 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
           <Wallet size={20} className="text-primary" />
           <h1 className="text-lg font-bold">{APP_NAME}</h1>
         </div>
-        <div className="flex items-center gap-1 rounded-lg border border-input bg-background p-1">
-          {themeButtons.map((item) => {
-            const Icon = item.icon;
-            const active = currentTheme === item.value;
-            return (
-              <button
-                key={item.value}
-                type="button"
-                onClick={() => handleThemeChange(item.value)}
-                aria-label={item.label}
-                aria-pressed={active}
-                className={cn(
-                  'h-7 w-7 inline-flex items-center justify-center rounded-md transition-colors',
-                  active
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
-                )}
-              >
-                <Icon size={14} />
-              </button>
-            );
-          })}
-        </div>
+        <button
+          onClick={toggleTheme}
+          className="h-9 w-9 flex items-center justify-center rounded-lg border border-input bg-background hover:bg-secondary transition-colors"
+          title="Alternar tema"
+        >
+          {getThemeIcon()}
+        </button>
       </div>
 
 

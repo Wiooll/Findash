@@ -6,7 +6,7 @@ export interface ReceiptPhotoSuggestion {
 }
 
 const MAX_RECEIPT_SIZE_BYTES = 5 * 1024 * 1024;
-const ALLOWED_RECEIPT_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_RECEIPT_MIME_PREFIX = 'image/';
 
 const toYmd = (date: Date) => date.toISOString().slice(0, 10);
 
@@ -40,8 +40,8 @@ const parseStoreFromName = (name: string): string => {
 };
 
 export const validateReceiptPhotoFile = (file: File): string => {
-  if (!ALLOWED_RECEIPT_MIME.has(file.type)) {
-    return 'Formato inválido. Use JPEG, PNG ou WEBP.';
+  if (!file.type.startsWith(ALLOWED_RECEIPT_MIME_PREFIX)) {
+    return 'Formato inválido. Por favor, selecione uma imagem.';
   }
 
   if (file.size > MAX_RECEIPT_SIZE_BYTES) {
@@ -56,6 +56,9 @@ export const validateReceiptPhotoFile = (file: File): string => {
  * Evita OCR externo neste ciclo e mantém revisão humana obrigatória.
  */
 export const suggestExpenseFromReceiptPhoto = async (file: File): Promise<ReceiptPhotoSuggestion> => {
+  // Simula um pequeno tempo de processamento para feedback visual
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
   const now = new Date();
   const parsedDate = parseDateFromName(file.name);
   const parsedValue = parseValueFromName(file.name);

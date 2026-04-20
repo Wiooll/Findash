@@ -12,7 +12,7 @@
 
 ## 3. Gastos por Foto de Nota Fiscal
 
-- [x] 3.1 Implementar upload seguro de imagem da nota fiscal com validação de formato e tamanho.
+- [x] 3.1 Implementar campo de upload (permitindo câmera ou galeria) seguro de imagem da nota fiscal com validação de formato e tamanho.
 - [x] 3.2 Integrar processamento da imagem para sugerir campos de gasto (valor, data e estabelecimento).
 - [x] 3.3 Implementar revisão obrigatória do usuário antes do salvamento e fallback para preenchimento manual.
 - [x] 3.4 Cobrir falhas de extração com mensagens de erro e logs para diagnóstico.

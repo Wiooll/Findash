@@ -339,7 +339,7 @@ export const TransactionsTable = () => {
           <input
             ref={receiptInputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept="image/*"
             className="hidden"
             onChange={(event) => void handleReceiptPhotoUpload(event)}
           />

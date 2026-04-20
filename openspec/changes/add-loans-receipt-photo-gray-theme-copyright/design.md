@@ -27,9 +27,9 @@ O projeto já possui base para controle de gastos e melhorias recentes de layout
 - Racional: evita misturar semânticas com transações comuns e facilita evolução futura.
 - Alternativa considerada: representar empréstimos como categoria de gasto/receita comum. Rejeitada por limitar regras específicas.
 
-3. Entrada por foto com validação humana obrigatória
-- Decisão: o sistema sugere campos extraídos da foto, mas o usuário deve confirmar/editar antes de salvar.
-- Racional: OCR/extração pode conter erro; validação humana evita dados incorretos.
+3. Entrada por foto com validação humana obrigatória e opções de captura
+- Decisão: o sistema pedirá para o usuário tirar uma foto na hora ou escolher da galeria (usando `accept="image/*"`). O sistema sugere campos extraídos da foto, mas o usuário deve confirmar/editar antes de salvar.
+- Racional: dá flexibilidade ao usuário de cadastrar uma nota recebida por imagem ou fotografar na hora. OCR/extração pode conter erro; validação humana evita dados incorretos.
 - Alternativa considerada: gravação automática sem confirmação. Rejeitada por alto risco de inconsistência.
 
 4. Tema cinza como terceira opção orientada por tokens de cor
