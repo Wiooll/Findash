@@ -11,12 +11,12 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: '2026-04-30',
     highlights: [
       'Menu mobile com arraste horizontal mais fluido para acessar todas as abas.',
-      'Notificacao de novidades por versao para destacar recursos novos.',
-      'Nova aba "Atualizacoes" com historico de releases e melhorias.',
+      'Notificação de novidades por versão para destacar recursos novos.',
+      'Nova aba "Atualizações" com histórico de releases e melhorias.',
     ],
     details: [
-      'Ao clicar na notificacao, o app abre a aba de atualizacoes.',
-      'A versao atual e marcada como visualizada apos o acesso a aba.',
+      'Ao clicar na notificação, o app abre a aba de atualizações.',
+      'A versão atual é marcada como visualizada após o acesso à aba.',
     ],
   },
   {
@@ -24,7 +24,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     date: '2026-04-30',
     highlights: [
       'Aba Gerenciamento com suporte, documentos legais e backup manual.',
-      'Exportacao e importacao de backup JSON com validacao de estrutura.',
+      'Exportação e importação de backup JSON com validação de estrutura.',
     ],
   },
 ];

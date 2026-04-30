@@ -47,7 +47,7 @@ function AppContent() {
         showReleaseNotification
           ? {
               version: APP_VERSION,
-              highlights: currentRelease?.highlights ?? ['Confira os novos recursos desta versao.'],
+              highlights: currentRelease?.highlights ?? ['Confira os novos recursos desta versão.'],
             }
           : null
       }
