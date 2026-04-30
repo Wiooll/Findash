@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Bug, FileText, LifeBuoy, Mail, ShieldCheck, Cookie, Cloud, Upload, Download } from 'lucide-react';
+import { Bug, Copy, FileText, HandHeart, LifeBuoy, Mail, ShieldCheck, Cookie, Cloud, Upload, Download } from 'lucide-react';
 import { APP_VERSION } from '../constants/app';
 import { useFinance } from '../context/FinanceContext';
 import { isValidBackupSnapshot } from '../utils/localPersistence';
 import type { FinanceBackupSnapshot } from '../types';
 
 const SUPPORT_EMAIL = 'suporte.listae@gmail.com';
+const SUPPORT_PIX_KEY = import.meta.env.VITE_SUPPORT_PIX_KEY?.trim() || '';
 
 const createMailtoLink = (type: 'suggestion' | 'bug') => {
   const subject = type === 'suggestion' ? '[FinDash] Sugestão' : '[FinDash] Bug';
@@ -19,6 +20,25 @@ export function Management() {
   const { getBackupSnapshot, restoreBackupSnapshot } = useFinance();
   const [legalDoc, setLegalDoc] = useState<'terms' | 'privacy' | 'cookies' | null>(null);
   const [message, setMessage] = useState<string>('');
+
+  const maskPixKey = (key: string) => {
+    if (key.length <= 8) return key;
+    return `${key.slice(0, 4)}...${key.slice(-4)}`;
+  };
+
+  const handleCopyPixKey = async () => {
+    if (!SUPPORT_PIX_KEY) {
+      setMessage('Chave Pix indisponivel no momento.');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(SUPPORT_PIX_KEY);
+      setMessage('Chave Pix copiada com sucesso.');
+    } catch {
+      setMessage('Nao foi possivel copiar a chave Pix.');
+    }
+  };
 
   const handleExport = () => {
     const snapshot = getBackupSnapshot();
@@ -128,6 +148,36 @@ export function Management() {
           >
             Abrir Google Drive para enviar ou baixar seus arquivos de backup
           </a>
+        </article>
+
+        <article className="bg-card border border-border rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <HandHeart size={18} className="text-primary" />
+            <h3 className="font-semibold">Apoie o FinDash</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Sua contribuicao ajuda a manter melhorias, correcoes e novos recursos.
+          </p>
+          {SUPPORT_PIX_KEY ? (
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">
+                Chave Pix: <span className="font-medium text-foreground">{maskPixKey(SUPPORT_PIX_KEY)}</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => void handleCopyPixKey()}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                <Copy size={16} />
+                Copiar chave Pix
+              </button>
+              <p className="text-xs text-muted-foreground">Contribuicao opcional e espontanea.</p>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Chave Pix ainda nao configurada para este ambiente.
+            </p>
+          )}
         </article>
       </section>
 

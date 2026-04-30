@@ -7,6 +7,18 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: '4.5.1',
+    date: '2026-04-30',
+    highlights: [
+      'Nova secao "Apoie o FinDash" na aba Gerenciamento para colaboracoes via Pix.',
+      'Botao para copiar chave Pix com mensagem de sucesso e fallback de erro.',
+    ],
+    details: [
+      'A chave Pix agora e lida por variavel de ambiente para facilitar configuracao por ambiente.',
+      'Quando a chave nao estiver configurada, o app informa sem quebrar a interface.',
+    ],
+  },
+  {
     version: '4.5.0',
     date: '2026-04-30',
     highlights: [

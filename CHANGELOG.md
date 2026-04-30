@@ -1,3 +1,13 @@
+## [4.5.1] - 2026-04-30
+
+### Adicionado
+- Nova secao **Apoie o FinDash** na aba Gerenciamento para colaboracao via Pix.
+- Botao para copiar a chave Pix com mensagem de sucesso/erro ao usuario.
+
+### Alterado
+- Chave Pix lida por variavel de ambiente (`VITE_SUPPORT_PIX_KEY`) para configuracao por ambiente.
+- Versao da aplicacao atualizada para 4.5.1.
+
 ## [4.4.0] - 2026-04-30
 
 ### Adicionado

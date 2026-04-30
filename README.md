@@ -10,6 +10,7 @@ O **FinDash** é um dashboard moderno, interativo e responsivo para controle de 
 - Controle de contas, cartões de crédito e faturas.
 - Módulo de empréstimos com acompanhamento de status.
 - Tela de gerenciamento com suporte, backup manual e documentos legais.
+- Seção de apoio ao projeto com cópia da chave Pix para contribuição opcional.
 - Notificações de novidades por versão e aba de **Atualizações**.
 
 ## Tecnologias
@@ -48,7 +49,25 @@ npm run dev
 
 4. Acesse no navegador: `http://localhost:5173`
 
+## Configuração opcional de apoio via Pix
+
+Para habilitar a chave Pix no card de apoio:
+
+1. Configure no `.env.local`:
+
+```bash
+VITE_SUPPORT_PIX_KEY=sua-chave-pix-aqui
+```
+
+2. Reinicie o app (`npm run dev`) para carregar a variável.
+
 ## Atualizações recentes
+
+### Sprint 4.5.1 - Apoio ao Projeto via Pix
+
+- Nova seção **Apoie o FinDash** na aba **Gerenciamento**.
+- Botão para copiar a chave Pix com feedback de sucesso/erro.
+- Chave Pix configurável por ambiente com `VITE_SUPPORT_PIX_KEY`.
 
 ### Sprint 4.5.0 - Atualizações de Versão e Navegação Mobile
 
