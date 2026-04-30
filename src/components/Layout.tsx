@@ -9,6 +9,7 @@ import {
   Moon,
   ReceiptText,
   Repeat,
+  Settings,
   Sun,
   Tags,
   Target,
@@ -59,6 +60,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
     { id: 'recurring', label: 'Recorrências', icon: Repeat },
     { id: 'categories', label: 'Categorias', icon: Tags },
     { id: 'goals', label: 'Metas', icon: Target },
+    { id: 'management', label: 'Gerenciamento', icon: Settings },
   ];
 
   return (

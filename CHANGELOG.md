@@ -1,7 +1,15 @@
-# Changelog
+## [4.4.0] - 2026-04-30
 
-Todas as mudanças relevantes de versão deste projeto serão documentadas neste arquivo.
+### Adicionado
+- Nova aba **Gerenciamento** no menu lateral e na navegacao mobile.
+- Hub central para os novos recursos de suporte e governanca:
+  - envio de sugestoes via mailto para suporte.listae@gmail.com;
+  - reporte de bugs via mailto com assunto padronizado;
+  - secao de documentos legais (Termos de Uso, Privacidade e Cookies);
+  - secao informativa de backup manual (localStorage + Google Drive).
 
+### Alterado
+- Versao da aplicacao atualizada para 4.4.0.
 ## [4.1.0] - 2026-04-17
 
 ### Adicionado
@@ -80,3 +88,5 @@ O formato segue uma adaptação de [Keep a Changelog](https://keepachangelog.com
 - Configuração de build/lint e arquivos base do projeto.
 
 [1.0.0]: https://github.com/Wiooll/Findash/releases/tag/v1.0.0
+
+

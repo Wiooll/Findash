@@ -5,6 +5,7 @@ O sistema ja possui autenticacao Google e persistencia em nuvem, mas a diretriz 
 ## Goals / Non-Goals
 
 **Goals:**
+- Disponibilizar uma pagina de Gerenciamento para concentrar os novos recursos.
 - Expor canal de sugestoes e bugs por `mailto` para `suporte.listae@gmail.com`.
 - Publicar Termos de Uso, Politica de Privacidade e Politica de Cookies acessiveis pelo rodape.
 - Consolidar `localStorage` como origem principal dos dados financeiros no cliente.
@@ -22,17 +23,21 @@ O sistema ja possui autenticacao Google e persistencia em nuvem, mas a diretriz 
 - Decisao: centralizar direitos autorais, contato e links legais no rodape global.
 - Racional: reduz duplicacao e garante acesso constante a documentos obrigatorios.
 
-2. Persistencia principal em `localStorage`
+2. Pagina de Gerenciamento como hub funcional
+- Decisao: adicionar uma aba dedicada no menu principal para concentrar suporte, backup e governanca.
+- Racional: melhora descobribilidade e reduz friccao para uso dos novos recursos.
+
+3. Persistencia principal em `localStorage`
 - Decisao: leitura/escrita do estado financeiro sera feita em chaves versionadas no navegador.
 - Racional: atende requisito de operacao local e simplifica uso offline.
 - Alternativa rejeitada: manter Firestore como fonte principal, por divergencia com o escopo aprovado.
 
-3. Backup manual no Google Drive por arquivo JSON
+4. Backup manual no Google Drive por arquivo JSON
 - Decisao: gerar snapshot JSON unico, com upload manual para Drive e restauracao manual por selecao do arquivo.
 - Racional: menor risco operacional que sync automatica; implementacao incremental e auditavel pelo usuario.
 - Alternativa rejeitada: sincronizacao automatica continua (complexidade alta e risco de conflito/perda).
 
-4. Validacao estrita no restore
+5. Validacao estrita no restore
 - Decisao: restauracao so acontece com schema minimo valido e confirmacao explicita do usuario.
 - Racional: evita corrupcao da base local por arquivo invalido ou incompleto.
 
@@ -73,11 +78,12 @@ Notas:
 
 ## Migration Plan
 
-1. Introduzir camada de persistencia local com adaptador isolado.
-2. Migrar leitura inicial para `localStorage` com fallback seguro para estado padrao.
-3. Introduzir export/import local de backup JSON.
-4. Integrar upload/download manual com Google Drive na conta autenticada.
-5. Publicar links legais e `mailto` no rodape institucional.
+1. Publicar aba de Gerenciamento com acoes de suporte e secoes institucionais.
+2. Introduzir camada de persistencia local com adaptador isolado.
+3. Migrar leitura inicial para `localStorage` com fallback seguro para estado padrao.
+4. Introduzir export/import local de backup JSON.
+5. Integrar upload/download manual com Google Drive na conta autenticada.
+6. Publicar paginas legais completas e links finais.
 
 ## Risks / Trade-offs
 
@@ -90,5 +96,5 @@ Notas:
 
 ## Open Questions
 
-- Onde posicionar a UI de backup manual (configuracoes gerais ou secao dedicada)?
+- A navegacao dos botoes legais no Gerenciamento vai abrir paginas internas dedicadas ou modais?
 - O app deve manter uma copia local do ultimo backup exportado para download rapido?

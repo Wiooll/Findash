@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Publicar Paginas Legais Obrigatorias
-O sistema SHALL disponibilizar Termos de Uso, Politica de Privacidade e Politica de Cookies acessiveis por links no rodape institucional.
+O sistema SHALL disponibilizar Termos de Uso, Politica de Privacidade e Politica de Cookies acessiveis por links na pagina de Gerenciamento.
 
 #### Scenario: Acesso aos Termos de Uso
 - **WHEN** o usuario clicar no link "Termos de Uso"

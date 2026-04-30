@@ -12,6 +12,7 @@ import { Accounts } from './components/Accounts';
 import { CreditCards } from './components/CreditCards';
 import { Insights } from './components/Insights';
 import { Loans } from './components/Loans';
+import { Management } from './components/Management';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -27,6 +28,7 @@ function AppContent() {
       {activeTab === 'recurring' && <RecurringTransactions />}
       {activeTab === 'categories' && <Categories />}
       {activeTab === 'goals' && <Goals />}
+      {activeTab === 'management' && <Management />}
     </Layout>
   );
 }

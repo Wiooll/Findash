@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Disponibilizar Canal de Sugestoes e Bugs por Email
-O sistema SHALL disponibilizar no rodape um canal de contato por `mailto` para `suporte.listae@gmail.com`, com assunto e corpo pre-preenchidos para facilitar o reporte.
+O sistema SHALL disponibilizar na pagina de Gerenciamento um canal de contato por `mailto` para `suporte.listae@gmail.com`, com assunto e corpo pre-preenchidos para facilitar o reporte.
 
 #### Scenario: Abertura de email para sugestao
 - **WHEN** o usuario clicar em "Enviar sugestao"

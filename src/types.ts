@@ -180,3 +180,22 @@ export interface AnomalyAlert {
 }
 
 export type InsightHistoryEntry = InsightAlert | AnomalyAlert;
+
+export interface FinanceBackupData {
+  transactions: Transaction[];
+  categories: Categoria[];
+  recurringTransactions: RecurringTransaction[];
+  categoryBudgets: CategoryBudget[];
+  config: AppConfig;
+  contas: Conta[];
+  cartoesCredito: CartaoCredito[];
+  faturaStatuses: FaturaStatus[];
+  loans: Loan[];
+}
+
+export interface FinanceBackupSnapshot {
+  version: string;
+  exportedAt: string;
+  app: string;
+  data: FinanceBackupData;
+}
