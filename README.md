@@ -166,3 +166,11 @@ npm run dev
 - Exportação e importação de backup em **JSON** com validação de estrutura antes da restauração.
 - Persistência local com snapshot por usuário em localStorage para recuperação e backup manual.
 
+
+## Sprint 4.5.0 - Atualizacoes de Versao e Navegacao Mobile
+
+- Melhoria no menu inferior mobile com arraste horizontal mais fluido para acessar todas as abas.
+- Nova aba **Atualizacoes** com historico de versoes, destaques e melhorias.
+- Nova notificacao de novidades por versao: ao detectar versao nao visualizada, o app exibe aviso com atalho para a aba de atualizacoes.
+- Ao abrir a aba de atualizacoes, a versao atual e marcada como visualizada localmente.
+

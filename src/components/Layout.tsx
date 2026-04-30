@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+﻿import type { ReactNode } from 'react';
 import {
   BrainCircuit,
   Circle,
@@ -6,6 +6,7 @@ import {
   CreditCard,
   Landmark,
   LayoutDashboard,
+  Megaphone,
   Moon,
   ReceiptText,
   Repeat,
@@ -27,9 +28,17 @@ interface LayoutProps {
   children: ReactNode;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  releaseNotification: { version: string; highlights: string[] } | null;
+  onOpenUpdates: () => void;
 }
 
-export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
+export const Layout = ({
+  children,
+  activeTab,
+  setActiveTab,
+  releaseNotification,
+  onOpenUpdates,
+}: LayoutProps) => {
   const { config, setThemeMode } = useFinance();
   const { user, logout } = useAuth();
   const currentTheme = config.themeMode || (config.isDarkMode ? 'black' : 'white');
@@ -44,9 +53,12 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
 
   const getThemeIcon = () => {
     switch (currentTheme) {
-      case 'black': return <Moon size={16} />;
-      case 'gray': return <Circle size={16} />;
-      default: return <Sun size={16} />;
+      case 'black':
+        return <Moon size={16} />;
+      case 'gray':
+        return <Circle size={16} />;
+      default:
+        return <Sun size={16} />;
     }
   };
 
@@ -60,6 +72,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
     { id: 'recurring', label: 'Recorrências', icon: Repeat },
     { id: 'categories', label: 'Categorias', icon: Tags },
     { id: 'goals', label: 'Metas', icon: Target },
+    { id: 'updates', label: 'Atualizações', icon: Megaphone },
     { id: 'management', label: 'Gerenciamento', icon: Settings },
   ];
 
@@ -98,9 +111,7 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
 
         <div className="mt-auto pt-4 border-t border-border">
           <div className="px-4 pb-3 space-y-1">
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.email || 'Usuário autenticado'}
-            </p>
+            <p className="text-xs text-muted-foreground truncate">{user?.email || 'Usuário autenticado'}</p>
             <p className="text-xs text-muted-foreground">Versão {APP_VERSION}</p>
           </div>
           <div className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-muted-foreground gap-2">
@@ -136,11 +147,28 @@ export const Layout = ({ children, activeTab, setActiveTab }: LayoutProps) => {
         </button>
       </div>
 
-
-
       <MobileBottomNav items={menuItems} activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="flex-1 p-4 pb-28 md:p-8 md:pb-8 overflow-y-auto w-full max-w-[1600px] mx-auto min-h-[calc(100dvh-60px)]">
+        {releaseNotification && (
+          <section className="mb-4 bg-primary/10 border border-primary/20 rounded-xl p-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium text-primary">Novidades da versão {releaseNotification.version}</p>
+                <p className="text-xs text-primary/90">
+                  {releaseNotification.highlights[0] || 'Confira os novos recursos desta versão.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onOpenUpdates}
+                className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity"
+              >
+                Ver atualizações
+              </button>
+            </div>
+          </section>
+        )}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">{children}</div>
         <footer className="mt-8 pt-6 border-t border-border text-xs text-muted-foreground text-center">
           {copyrightText}

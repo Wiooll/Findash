@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AuthGate } from './components/AuthGate';
 import { FinanceProvider } from './context/FinanceContext';
 import { AuthProvider } from './context/AuthContext';
@@ -13,12 +13,46 @@ import { CreditCards } from './components/CreditCards';
 import { Insights } from './components/Insights';
 import { Loans } from './components/Loans';
 import { Management } from './components/Management';
+import { Updates } from './components/Updates';
+import { APP_VERSION } from './constants/app';
+import { getReleaseByVersion } from './constants/releases';
+import { getLastSeenVersion, hasUnseenRelease, setLastSeenVersion } from './utils/releaseNotifications';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [lastSeenVersion, setLastSeenVersionState] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLastSeenVersionState(getLastSeenVersion());
+  }, []);
+
+  const showReleaseNotification = useMemo(
+    () => hasUnseenRelease(APP_VERSION, lastSeenVersion),
+    [lastSeenVersion],
+  );
+
+  useEffect(() => {
+    if (activeTab !== 'updates') return;
+    setLastSeenVersion(APP_VERSION);
+    setLastSeenVersionState(APP_VERSION);
+  }, [activeTab]);
+
+  const currentRelease = getReleaseByVersion(APP_VERSION);
 
   return (
-    <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
+    <Layout
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      releaseNotification={
+        showReleaseNotification
+          ? {
+              version: APP_VERSION,
+              highlights: currentRelease?.highlights ?? ['Confira os novos recursos desta versao.'],
+            }
+          : null
+      }
+      onOpenUpdates={() => setActiveTab('updates')}
+    >
       {activeTab === 'dashboard' && <Dashboard />}
       {activeTab === 'transactions' && <TransactionsTable />}
       {activeTab === 'loans' && <Loans />}
@@ -28,6 +62,7 @@ function AppContent() {
       {activeTab === 'recurring' && <RecurringTransactions />}
       {activeTab === 'categories' && <Categories />}
       {activeTab === 'goals' && <Goals />}
+      {activeTab === 'updates' && <Updates />}
       {activeTab === 'management' && <Management />}
     </Layout>
   );

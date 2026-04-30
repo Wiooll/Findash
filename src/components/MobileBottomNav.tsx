@@ -16,18 +16,18 @@ interface MobileBottomNavProps {
 export function MobileBottomNav({ items, activeTab, setActiveTab }: MobileBottomNavProps) {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-card/90 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom)]">
-      <ul className="flex items-center justify-between px-2 py-2 overflow-x-auto no-scrollbar gap-1">
+      <ul className="flex items-center px-2 py-2 overflow-x-auto no-scrollbar gap-1 whitespace-nowrap touch-pan-x snap-x snap-mandatory">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           
           return (
-            <li key={item.id} className="flex-shrink-0 flex-1 min-w-[70px]">
+            <li key={item.id} className="flex-shrink-0 min-w-[76px] snap-start">
               <button
                 type="button"
                 onClick={() => setActiveTab(item.id)}
                 className={cn(
-                  'w-full flex md:hidden flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all',
+                  'w-full flex md:hidden flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all touch-manipulation',
                   isActive
                     ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:bg-secondary/80'
