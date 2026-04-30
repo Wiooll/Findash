@@ -1,15 +1,16 @@
 {
   "name": "findash",
   "private": true,
-  "version": "4.5.1",
+  "version": "4.5.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "npm run check:text-encoding && npm run check:text-ptbr-ui && vitest run",
     "check:text-encoding": "node scripts/check-text-encoding.mjs",
+    "check:text-ptbr-ui": "node scripts/check-ptbr-ui.mjs",
     "prepare": "husky"
   },
   "dependencies": {

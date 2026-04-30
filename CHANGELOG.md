@@ -1,3 +1,13 @@
+## [4.5.2] - 2026-04-30
+
+### Corrigido
+- Ortografia e acentuação de textos exibidos na interface (pt-BR).
+- Mensagens da aba Gerenciamento e histórico de Atualizações com encoding normalizado.
+
+### Adicionado
+- Script `check:text-ptbr-ui` para validar textos da interface e bloquear termos comuns sem acento.
+- Execução automática das validações de texto (`check:text-encoding` e `check:text-ptbr-ui`) no fluxo de `npm test`.
+
 ## [4.5.1] - 2026-04-30
 
 ### Adicionado

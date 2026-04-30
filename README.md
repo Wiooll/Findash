@@ -63,6 +63,11 @@ VITE_SUPPORT_PIX_KEY=sua-chave-pix-aqui
 
 ## Atualizações recentes
 
+### Sprint 4.5.2 - Qualidade de Texto pt-BR
+
+- Correção de ortografia e acentuação em textos da interface.
+- Nova validação automática para bloquear textos com erro de pt-BR/encoding.
+
 ### Sprint 4.5.1 - Apoio ao Projeto via Pix
 
 - Nova seção **Apoie o FinDash** na aba **Gerenciamento**.
@@ -95,4 +100,10 @@ Para evitar regressões de encoding (ex.: acentuação corrompida ou símbolos i
 
 ```bash
 npm run check:text-encoding
+```
+
+Para validar ortografia/acentuação em textos visíveis da interface (pt-BR), execute:
+
+```bash
+npm run check:text-ptbr-ui
 ```

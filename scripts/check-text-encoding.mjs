@@ -1,29 +1,28 @@
-import { readFileSync, existsSync } from 'node:fs';
+﻿import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const targets = ['src', 'README.md'];
-const suspiciousPatterns = [
-  'Ã¡',
-  'Ã£',
-  'Ã¢',
-  'Ã§',
-  'Ã©',
-  'Ãª',
-  'Ã­',
-  'Ã³',
-  'Ã´',
-  'Ãµ',
-  'Ãº',
-  'Ã‰',
-  'Ã“',
-  'â€”',
-  'â€“',
-  'â€',
-  'ðŸ',
-  '�',
-];
 
-const { readdirSync, statSync } = await import('node:fs');
+const suspiciousPatterns = [
+  'ÃƒÂ¡',
+  'ÃƒÂ£',
+  'ÃƒÂ¢',
+  'ÃƒÂ§',
+  'ÃƒÂ©',
+  'ÃƒÂª',
+  'ÃƒÂ­',
+  'ÃƒÂ³',
+  'ÃƒÂ´',
+  'ÃƒÂµ',
+  'ÃƒÂº',
+  'Ãƒâ€°',
+  'Ãƒâ€œ',
+  'Ã¢â‚¬â€',
+  'Ã¢â‚¬â€œ',
+  'Ã¢â‚¬',
+  'Ã°Å¸',
+  'ï¿½',
+];
 
 const filesToCheck = [];
 

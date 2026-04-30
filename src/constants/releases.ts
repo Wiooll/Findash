@@ -1,4 +1,4 @@
-export interface ReleaseNote {
+﻿export interface ReleaseNote {
   version: string;
   date: string;
   highlights: string[];
@@ -7,15 +7,27 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: '4.5.2',
+    date: '2026-04-30',
+    highlights: [
+      'Correções de ortografia em pt-BR nos textos da interface.',
+      'Nova validação automática para bloquear textos com erro de acentuação/encoding.',
+    ],
+    details: [
+      'A validação agora verifica strings da interface e acusa termos com ortografia inválida comum.',
+      'Também foi corrigida a qualidade textual nas mensagens de Gerenciamento e Atualizações.',
+    ],
+  },
+  {
     version: '4.5.1',
     date: '2026-04-30',
     highlights: [
-      'Nova secao "Apoie o FinDash" na aba Gerenciamento para colaboracoes via Pix.',
-      'Botao para copiar chave Pix com mensagem de sucesso e fallback de erro.',
+      'Nova seção "Apoie o FinDash" na aba Gerenciamento para colaborações via Pix.',
+      'Botão para copiar chave Pix com mensagem de sucesso e fallback de erro.',
     ],
     details: [
-      'A chave Pix agora e lida por variavel de ambiente para facilitar configuracao por ambiente.',
-      'Quando a chave nao estiver configurada, o app informa sem quebrar a interface.',
+      'A chave Pix agora é lida por variável de ambiente para facilitar configuração por ambiente.',
+      'Quando a chave não estiver configurada, o app informa sem quebrar a interface.',
     ],
   },
   {

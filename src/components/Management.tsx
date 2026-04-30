@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Bug, Copy, FileText, HandHeart, LifeBuoy, Mail, ShieldCheck, Cookie, Cloud, Upload, Download } from 'lucide-react';
 import { APP_VERSION } from '../constants/app';
 import { useFinance } from '../context/FinanceContext';
@@ -28,7 +28,7 @@ export function Management() {
 
   const handleCopyPixKey = async () => {
     if (!SUPPORT_PIX_KEY) {
-      setMessage('Chave Pix indisponivel no momento.');
+      setMessage('Chave Pix indisponível no momento.');
       return;
     }
 
@@ -36,7 +36,7 @@ export function Management() {
       await navigator.clipboard.writeText(SUPPORT_PIX_KEY);
       setMessage('Chave Pix copiada com sucesso.');
     } catch {
-      setMessage('Nao foi possivel copiar a chave Pix.');
+      setMessage('Não foi possível copiar a chave Pix.');
     }
   };
 
@@ -156,7 +156,7 @@ export function Management() {
             <h3 className="font-semibold">Apoie o FinDash</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-3">
-            Sua contribuicao ajuda a manter melhorias, correcoes e novos recursos.
+            Sua contribuição ajuda a manter melhorias, correções e novos recursos.
           </p>
           {SUPPORT_PIX_KEY ? (
             <div className="space-y-3">
@@ -171,11 +171,11 @@ export function Management() {
                 <Copy size={16} />
                 Copiar chave Pix
               </button>
-              <p className="text-xs text-muted-foreground">Contribuicao opcional e espontanea.</p>
+              <p className="text-xs text-muted-foreground">Contribuição opcional e espontânea.</p>
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Chave Pix ainda nao configurada para este ambiente.
+              Chave Pix ainda não configurada para este ambiente.
             </p>
           )}
         </article>
