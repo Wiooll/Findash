@@ -11,6 +11,7 @@ O **FinDash** é um dashboard moderno, interativo e responsivo para controle de 
 - Módulo de empréstimos com acompanhamento de status.
 - Tela de gerenciamento com suporte, backup manual e documentos legais.
 - Seção de apoio ao projeto com cópia da chave Pix para contribuição opcional.
+- Seção de app parceiro na aba Gerenciamento com CTA externo seguro.
 - Notificações de novidades por versão e aba de **Atualizações**.
 
 ## Tecnologias
@@ -61,7 +62,30 @@ VITE_SUPPORT_PIX_KEY=sua-chave-pix-aqui
 
 2. Reinicie o app (`npm run dev`) para carregar a variável.
 
+## Configuração opcional de app parceiro
+
+Para habilitar o card de divulgação de app parceiro na aba **Gerenciamento**:
+
+1. Configure no `.env.local`:
+
+```bash
+VITE_PARTNER_APP_NAME=Nome do app parceiro
+VITE_PARTNER_APP_DESCRIPTION=Descrição curta do parceiro
+VITE_PARTNER_APP_URL=https://parceiro.exemplo.com
+VITE_PARTNER_APP_CTA_LABEL=Conhecer app parceiro
+```
+
+2. Campos obrigatórios para exibição: `VITE_PARTNER_APP_NAME` e `VITE_PARTNER_APP_URL`.
+3. O link aceita apenas URLs `http` ou `https`.
+4. Reinicie o app (`npm run dev`) após atualizar variáveis de ambiente.
+
 ## Atualizações recentes
+
+### Sprint 4.6.0 - Espaço de App Parceiro
+
+- Novo card **App Parceiro** na aba **Gerenciamento**.
+- Exibição condicional por configuração de ambiente (nome + URL válidos).
+- Link externo com abertura segura em nova aba.
 
 ### Sprint 4.5.2 - Qualidade de Texto pt-BR
 

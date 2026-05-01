@@ -3,10 +3,12 @@ import { Bug, Copy, FileText, HandHeart, LifeBuoy, Mail, ShieldCheck, Cookie, Cl
 import { APP_VERSION } from '../constants/app';
 import { useFinance } from '../context/FinanceContext';
 import { isValidBackupSnapshot } from '../utils/localPersistence';
+import { getPartnerPromotionConfig } from '../utils/partnerPromotion';
 import type { FinanceBackupSnapshot } from '../types';
 
 const SUPPORT_EMAIL = 'suporte.listae@gmail.com';
 const SUPPORT_PIX_KEY = import.meta.env.VITE_SUPPORT_PIX_KEY?.trim() || '';
+const PARTNER_PROMOTION = getPartnerPromotionConfig(import.meta.env);
 
 const createMailtoLink = (type: 'suggestion' | 'bug') => {
   const subject = type === 'suggestion' ? '[FinDash] Sugestão' : '[FinDash] Bug';
@@ -179,6 +181,29 @@ export function Management() {
             </p>
           )}
         </article>
+
+        {PARTNER_PROMOTION && (
+          <article className="bg-card border border-border rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <HandHeart size={18} className="text-primary" />
+              <h3 className="font-semibold">App Parceiro</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              {PARTNER_PROMOTION.description}
+            </p>
+            <p className="text-xs text-muted-foreground mb-3">
+              {PARTNER_PROMOTION.disclosure}: <span className="font-medium text-foreground">{PARTNER_PROMOTION.name}</span>
+            </p>
+            <a
+              href={PARTNER_PROMOTION.url}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              {PARTNER_PROMOTION.ctaLabel}
+            </a>
+          </article>
+        )}
       </section>
 
       <section className="bg-card border border-border rounded-2xl p-5">

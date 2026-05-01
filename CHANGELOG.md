@@ -1,3 +1,14 @@
+## [4.6.0] - 2026-04-30
+
+### Adicionado
+- Novo card **App Parceiro** na aba Gerenciamento para divulgação de parceiros.
+- Configuração por variáveis de ambiente para nome, descrição, URL e texto do CTA.
+- Exibição transparente de conteúdo parceiro na interface.
+
+### Alterado
+- Validação de URL (`http`/`https`) para renderizar o card parceiro com segurança.
+- Versão da aplicação atualizada para `4.6.0`.
+
 ## [4.5.2] - 2026-04-30
 
 ### Corrigido
@@ -108,5 +119,4 @@ O formato segue uma adaptação de [Keep a Changelog](https://keepachangelog.com
 - Configuração de build/lint e arquivos base do projeto.
 
 [1.0.0]: https://github.com/Wiooll/Findash/releases/tag/v1.0.0
-
 

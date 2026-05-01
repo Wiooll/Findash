@@ -7,6 +7,18 @@
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: '4.6.0',
+    date: '2026-04-30',
+    highlights: [
+      'Nova seção "App Parceiro" na aba Gerenciamento com exibição configurável por ambiente.',
+      'Validação de URL para exibir apenas links seguros (http/https) no card parceiro.',
+    ],
+    details: [
+      'A seção só aparece quando nome e URL do parceiro estão configurados corretamente.',
+      'Também foram adicionados fallbacks de descrição/CTA e testes para renderização condicional.',
+    ],
+  },
+  {
     version: '4.5.2',
     date: '2026-04-30',
     highlights: [
