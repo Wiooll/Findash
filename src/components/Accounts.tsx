@@ -220,9 +220,17 @@ export const Accounts = () => {
             const saldo = saldos[conta.id] ?? 0;
             const isSelected = contaSelecionada === conta.id;
             return (
-              <button
+              <div
                 key={conta.id}
                 onClick={() => setContaSelecionada(isSelected ? null : conta.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setContaSelecionada(isSelected ? null : conta.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 className={`text-left p-5 rounded-xl border transition-all shadow-sm relative overflow-hidden group ${
                   isSelected
                     ? 'ring-2 ring-primary border-primary/30 bg-primary/5'
@@ -265,7 +273,7 @@ export const Accounts = () => {
                 >
                   {formatCurrency(saldo)}
                 </p>
-              </button>
+              </div>
             );
           })}
         </div>

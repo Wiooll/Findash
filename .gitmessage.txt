@@ -1,0 +1,7 @@
+﻿<tipo>: <resumo curto>
+
+- <mudança 1>
+- <mudança 2>
+- <mudança 3>
+- <impacto técnico>
+- <validação executada>

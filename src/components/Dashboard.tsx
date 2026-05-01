@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import {
   AlertTriangle,
@@ -457,10 +457,10 @@ export const Dashboard = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-card p-6 rounded-xl border border-border flex flex-col shadow-sm">
+        <div className="lg:col-span-2 bg-card p-6 rounded-xl border border-border flex flex-col shadow-sm min-w-0">
           <h3 className="font-semibold mb-6">Fluxo de Caixa - Últimos 12 meses</h3>
-          <div className="flex-1 min-h-[280px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full min-w-0 h-[280px]">
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart data={flowData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                 <XAxis
@@ -495,11 +495,11 @@ export const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-card p-6 rounded-xl border border-border flex flex-col shadow-sm">
+        <div className="bg-card p-6 rounded-xl border border-border flex flex-col shadow-sm min-w-0">
           <h3 className="font-semibold mb-6">Despesas por Categoria</h3>
-          <div className="flex-1 min-h-[280px] flex items-center justify-center">
+          <div className="w-full min-w-0 h-[280px] flex items-center justify-center">
             {categoryData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
                   <Pie
                     data={categoryData}
@@ -545,3 +545,5 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+

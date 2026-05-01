@@ -3,6 +3,8 @@ import { createContext, useContext, useState, useEffect, useMemo, useCallback } 
 import type { ReactNode } from 'react';
 import type {
   AppConfig,
+  FinanceBackupData,
+  FinanceBackupSnapshot,
   CartaoCredito,
   Categoria,
   CategoryBudget,
@@ -20,10 +22,12 @@ import {
   collection,
   doc,
   type CollectionReference,
+  getDocs,
   setDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
+  writeBatch,
 } from 'firebase/firestore';
 import {
   addDays,
@@ -39,6 +43,12 @@ import {
 import { db } from '../services/firebase';
 import { v4 as uuid } from 'uuid';
 import { useAuth } from './AuthContext';
+import {
+  buildStorageKey,
+  createBackupSnapshot,
+  loadSnapshotFromStorage,
+  saveSnapshotToStorage,
+} from '../utils/localPersistence';
 
 interface FinanceContextType {
   // Estado existente
@@ -115,6 +125,8 @@ interface FinanceContextType {
   getSaldoConta: (contaId: string) => number;
   getFaturasInfo: (anoMesParam?: string) => FaturaInfo[];
   getLimiteDisponivel: (cartaoId: string) => number;
+  getBackupSnapshot: () => FinanceBackupSnapshot;
+  restoreBackupSnapshot: (snapshot: FinanceBackupSnapshot) => Promise<void>;
 }
 
 const defaultCategories: Categoria[] = [
@@ -194,6 +206,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const [faturaStatuses, setFaturaStatuses] = useState<FaturaStatus[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
   const userId = user?.uid || null;
+  const storageKey = userId ? buildStorageKey(userId) : null;
 
   const applyTheme = useCallback((themeMode: ThemeMode) => {
     const root = document.documentElement;
@@ -219,6 +232,48 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   }, [userId]);
 
   const transactionsIdSet = useMemo(() => new Set(transactions.map((t) => t.id)), [transactions]);
+
+  const buildCurrentBackupData = useCallback((): FinanceBackupData => ({
+    transactions,
+    categories,
+    recurringTransactions,
+    categoryBudgets,
+    config,
+    contas,
+    cartoesCredito,
+    faturaStatuses,
+    loans,
+  }), [
+    transactions,
+    categories,
+    recurringTransactions,
+    categoryBudgets,
+    config,
+    contas,
+    cartoesCredito,
+    faturaStatuses,
+    loans,
+  ]);
+
+  useEffect(() => {
+    if (!storageKey) return;
+    const snapshot = loadSnapshotFromStorage(storageKey);
+    if (!snapshot) return;
+
+    setTransactions(snapshot.data.transactions);
+    setCategories(snapshot.data.categories);
+    setRecurringTransactions(snapshot.data.recurringTransactions);
+    setCategoryBudgets(snapshot.data.categoryBudgets);
+    setConfig(snapshot.data.config);
+    setContas(snapshot.data.contas);
+    setCartoesCredito(snapshot.data.cartoesCredito);
+    setFaturaStatuses(snapshot.data.faturaStatuses);
+    setLoans(snapshot.data.loans);
+
+    const normalizedTheme: ThemeMode =
+      snapshot.data.config.themeMode || (snapshot.data.config.isDarkMode ? 'black' : 'white');
+    applyTheme(normalizedTheme);
+  }, [applyTheme, storageKey]);
 
   // ── Syncs Firestore ─────────────────────────────────────────────────────────
 
@@ -834,6 +889,68 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  useEffect(() => {
+    if (!storageKey) return;
+    const snapshot = createBackupSnapshot(buildCurrentBackupData());
+    saveSnapshotToStorage(storageKey, snapshot);
+  }, [buildCurrentBackupData, storageKey]);
+
+  const getBackupSnapshot = (): FinanceBackupSnapshot => createBackupSnapshot(buildCurrentBackupData());
+
+  const restoreBackupSnapshot = async (snapshot: FinanceBackupSnapshot) => {
+    const payload = snapshot.data;
+    setTransactions(payload.transactions);
+    setCategories(payload.categories);
+    setRecurringTransactions(payload.recurringTransactions);
+    setCategoryBudgets(payload.categoryBudgets);
+    setConfig(payload.config);
+    setContas(payload.contas);
+    setCartoesCredito(payload.cartoesCredito);
+    setFaturaStatuses(payload.faturaStatuses);
+    setLoans(payload.loans);
+
+    const normalizedTheme: ThemeMode =
+      payload.config.themeMode || (payload.config.isDarkMode ? 'black' : 'white');
+    applyTheme(normalizedTheme);
+
+    if (storageKey) {
+      saveSnapshotToStorage(storageKey, createBackupSnapshot(payload));
+    }
+
+    if (!userId) return;
+
+    const replaceCollection = async <T extends { id: string }>(
+      collectionName: string,
+      items: T[],
+    ) => {
+      const colRef = getUserCollection<T>(collectionName);
+      const snapshotDocs = await getDocs(colRef);
+      const batch = writeBatch(db);
+
+      snapshotDocs.forEach((docSnap) => {
+        batch.delete(docSnap.ref);
+      });
+
+      items.forEach((item) => {
+        batch.set(getUserDoc(collectionName, item.id), item);
+      });
+
+      await batch.commit();
+    };
+
+    await Promise.all([
+      replaceCollection('transactions', payload.transactions),
+      replaceCollection('categories', payload.categories),
+      replaceCollection('recurringTransactions', payload.recurringTransactions),
+      replaceCollection('categoryBudgets', payload.categoryBudgets),
+      replaceCollection('contas', payload.contas),
+      replaceCollection('cartoesCredito', payload.cartoesCredito),
+      replaceCollection('faturaStatus', payload.faturaStatuses),
+      replaceCollection('loans', payload.loans),
+      setDoc(getUserDoc('config', 'main'), { ...payload.config, userId }),
+    ]);
+  };
+
 
   return (
     <FinanceContext.Provider
@@ -877,6 +994,8 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
         getSaldoConta,
         getFaturasInfo,
         getLimiteDisponivel,
+        getBackupSnapshot,
+        restoreBackupSnapshot,
       }}
     >
       {children}
