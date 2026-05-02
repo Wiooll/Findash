@@ -63,6 +63,12 @@ VITE_SUPPORT_PIX_KEY=sua-chave-pix-aqui
 
 ## Atualizações recentes
 
+### Sprint 4.5.3 - Persistência do Mês em Transações
+
+- O filtro de mês da aba **Transações** agora permanece salvo ao sair e voltar para a aba.
+- A tela restaura automaticamente o último período selecionado no seletor existente.
+- Quando não há valor salvo válido, o sistema aplica fallback para o mês atual.
+
 ### Sprint 4.5.2 - Qualidade de Texto pt-BR
 
 - Correção de ortografia e acentuação em textos da interface.
