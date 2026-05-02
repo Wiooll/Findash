@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import type { Transaction, TransactionType, PaymentMethod } from '../types';
 import {
@@ -28,6 +28,11 @@ import {
   suggestExpenseFromReceiptPhoto,
   validateReceiptPhotoFile,
 } from '../utils/receiptPhoto';
+import {
+  getSavedTransactionsMonthFilter,
+  resolveTransactionsMonthFilter,
+  saveTransactionsMonthFilter,
+} from '../utils/transactionMonthPreference';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['Dinheiro', 'Cartão de crédito', 'Débito', 'PIX'];
 
@@ -103,7 +108,9 @@ export const TransactionsTable = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTipo, setFilterTipo] = useState<string>('todos');
-  const [filterMes, setFilterMes] = useState<string>('todos');
+  const [filterMes, setFilterMes] = useState<string>(() =>
+    resolveTransactionsMonthFilter(getSavedTransactionsMonthFilter()),
+  );
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
@@ -140,6 +147,10 @@ export const TransactionsTable = () => {
       })
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
   }, [transactions, searchTerm, filterTipo, filterMes]);
+
+  useEffect(() => {
+    saveTransactionsMonthFilter(filterMes);
+  }, [filterMes]);
 
   const handleEditClick = (t: Transaction) => {
     setEditingId(t.id);

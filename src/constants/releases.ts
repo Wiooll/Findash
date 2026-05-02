@@ -19,6 +19,18 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     ],
   },
   {
+    version: '4.5.3',
+    date: '2026-05-02',
+    highlights: [
+      'Filtro de mês da aba Transações agora permanece salvo ao sair e voltar para a tela.',
+      'Restauração automática do período ativo com fallback seguro para o mês atual.',
+    ],
+    details: [
+      'A implementação reaproveita o seletor existente, sem alterar o fluxo visual da tela.',
+      'Também foi incluída validação do valor salvo localmente para evitar estado inválido.',
+    ],
+  },
+  {
     version: '4.5.2',
     date: '2026-04-30',
     highlights: [
